@@ -16,8 +16,24 @@ public class AdminModel : PageModel
     {
         _antiforgery = antiforgery;
     }
+
+    public IActionResult OnGet()
+    {
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "");
+        if (!valid || session?.Role != "admin")
+        {
+            return Redirect("/Login");
+        }
+
+        return Page();
+    }
     public IActionResult OnGetCompanies(string searchInput)
     {
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "");
+        if (!valid || session?.Role != "admin")
+        {
+            return Redirect("/Login");
+        }
         if (!Request.IsHtmx())
         {
             return Page();
@@ -30,23 +46,26 @@ public class AdminModel : PageModel
 
     public void OnPostUpdateSingleValue(string ticker)
     {
-        FetchingService.GetAndUpdateSingleValue(ticker);
+        FetchingService.GetAndUpdateSingleValue(ticker.ToUpper());
     }
 
     public void OnPostUpdateFromCsv(IFormFile csvFile)
     {
         if (csvFile != null && csvFile.Length > 0)
         {
-            using (var stream = new StreamReader(csvFile.OpenReadStream()))
-            {
-                var csvContent = stream.ReadToEnd();
-                _ = FetchingService.UpdateDatabaseFromCsv(csvContent);
-            }
+            using var stream = new StreamReader(csvFile.OpenReadStream());
+            var csvContent = stream.ReadToEnd();
+            _ = FetchingService.UpdateDatabaseFromCsv(csvContent);
         }
     }
 
     public IActionResult OnPostUpdateTickerPrice(string tickerSymbol)
     {
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "");
+        if (!valid || session?.Role != "admin")
+        {
+            return Redirect("/Login");
+        }
         if (Request.IsHtmx())
         {
             var price = FetchingService.GetCurrentPrice(tickerSymbol);
@@ -57,6 +76,12 @@ public class AdminModel : PageModel
 
     public IActionResult OnGetGetFilings(string searchInput, string formType, DateTime? fromDate, DateTime? toDate)
     {
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "");
+        if (!valid || session?.Role != "admin")
+        {
+            return Redirect("/Login");
+        }
+
         if (!Request.IsHtmx())
         {
             return Page();

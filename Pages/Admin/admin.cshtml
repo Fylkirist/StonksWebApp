@@ -49,10 +49,18 @@
                     <label class="input-group-text" for="searchInput">Search company filings</label>
                     <input type="text" name="searchInput" id="searchInput" class="form-control" required>
                     <select name="formType" class="form-select">
-                        <option value="10-K">10-K</option>
-                        <option value="10-Q">10-Q</option>
-                        <option value="S-1">S-1</option>
-                        <option value="F-1">F-1</option>
+                        <optgroup label="SEC">
+                            <option value="10-K">10-K</option>
+                            <option value="10-Q">10-Q</option>
+                            <option value="S-1">S-1</option>
+                            <option value="S-3ASR">S-3</option>
+                            <option value="F-1">F-1</option>
+                            <option value="8-K">8-K</option>
+                            <option value="4">FORM 4</option>
+                        </optgroup>
+                        <optgroup label="FDA">
+                            <option>Test</option>
+                        </optgroup>
                     </select>
                     <label class="input-group-text" for="fromDate">From:</label>
                     <input name="fromDate" id="fromDate" type="date" class="form-control"/>
@@ -60,9 +68,10 @@
                     <input name="toDate" id="toDate" type="date" class="form-control"/>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
+                <img class="htmx-indicator" src="../spinner.gif" height="30" />
             </form>
             <div id="filingDatabaseViewer">
-
+                
             </div>
         </div>
     </div>

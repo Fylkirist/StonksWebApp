@@ -3,6 +3,7 @@
     <table class="table table-striped">
         <thead>
         <tr>
+            <th>Company</th>
             <th>Type</th>
             <th>Date</th>
             <th>Institution</th>
@@ -12,8 +13,9 @@
         @foreach (var filing in Model)
         {
             <tr>
+                <td>@filing.Organization?.Name</td>
                 <td><a href="@filing.Url">@filing.Type</a></td>
-                <td>@filing.Date</td>
+                <td>@filing.Date.ToString("dd-MM-yyyy")</td>
                 <td>@filing.Institution</td>
             </tr>
         }

@@ -119,11 +119,11 @@ public class DatabaseConnectionService
 
     public FilingModel[] GetFilings(string search, string type)
     {
-        var query = @"SELECT F.*
+        var query = @"SELECT F.*, C.CName
             FROM Filings F
             JOIN Companies C ON F.CompanyId = C.Id
             WHERE (C.CName LIKE @Search OR C.Ticker LIKE @Search)
-            AND F.FilingType = @FilingType
+            AND F.FilingType LIKE @FilingType
             LIMIT 50;
             ";
         var searchParam = new KeyValuePair<string, string>("Search", $"%{search}%");
@@ -135,7 +135,7 @@ public class DatabaseConnectionService
 
     public FilingModel[] GetFilings(string name, DateTime from, DateTime to, string type)
     {
-        var query = @$"SELECT F.*
+        var query = @$"SELECT F.*, C.CName
             FROM Filings F
             JOIN Companies C ON F.CompanyId = C.Id
             WHERE (C.CName LIKE @Search OR C.Ticker LIKE @Search)
