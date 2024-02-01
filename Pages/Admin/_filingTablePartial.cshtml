@@ -1,0 +1,22 @@
+﻿@model StonksWebApp.models.FilingModel[]
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Institution</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var filing in Model)
+        {
+            <tr>
+                <td><a href="@filing.Url">@filing.Type</a></td>
+                <td>@filing.Date</td>
+                <td>@filing.Institution</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

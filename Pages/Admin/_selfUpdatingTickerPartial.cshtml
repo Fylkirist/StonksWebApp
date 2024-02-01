@@ -1,0 +1,14 @@
+﻿@model StonksWebApp.models.TickerPriceModel
+@{
+    <form hx-post="@Url.Page("admin")?handler=UpdateTickerPrice&tickerSymbol=@Model.TickerSymbol"
+          hx-trigger="load delay:120s"
+          hx-swap="outerHTML">
+        @Html.AntiForgeryToken()
+        <label style="margin-right: 10px;">
+            Price: @Model.Price$
+        </label>
+        <label style="color: @(Model.Change >= 0 ? "green" : "red")">
+            @Model.Change.ToString("0.0")%
+        </label>
+    </form>
+}
