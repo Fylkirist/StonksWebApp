@@ -19,6 +19,10 @@ appsettings.json needs to contain the following keys with corresponding values:
       "Instance":<PGSQL instance host>,
       "Database":<Database name for this project>
   },
+  "Admin":{
+    "Email": <Email of the initial admin user to be generated on startup>,
+    "Password": <Password of inital admin>
+  },
   "Finnhub": <Finnhub API key>,
   "SEC": <Your user agent string for the SEC>
 }

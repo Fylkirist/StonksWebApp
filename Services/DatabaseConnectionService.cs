@@ -14,7 +14,7 @@ public class DatabaseConnectionService
     private IDatabaseConnection _connection;
     public DatabaseConnectionService(IDatabaseConnection connection)
     {
-        _connection= connection;
+        _connection = connection;
         _instance = this;
     }
 
@@ -87,6 +87,18 @@ public class DatabaseConnectionService
         Console.WriteLine("Filings table initialized.");
     }
 
+    public void CreateAdminUser(IConfiguration config)
+    {
+        try
+        {
+            CreateNewUser(config["Credentials:Admin:Email"], config["Credentials:Admin:Password"], true);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Admin user could not be generated: {e.Message}");
+        }
+    }
+
     public void DropAllTables()
     {
         string query = $@"DO $$ DECLARE
@@ -108,12 +120,13 @@ public class DatabaseConnectionService
         return users.Length >= 1? users[0]: null;
     }
 
-    public void CreateNewUser(string email, string password)
+    public void CreateNewUser(string email, string password, bool admin)
     {
         DateTime creationDate = DateTime.UtcNow;
         string hashedPassword = LoginManagerService.HashPassword(password);
+        string role = admin ? "admin" : "user";
         string query = @$"INSERT INTO Users (Id, Email, Pass, DateCreated, Watchlist, UserRole, Validated) 
-                        VALUES (DEFAULT, '{email}', '{hashedPassword}', '{creationDate}', '', 'user', 0)";
+                        VALUES (DEFAULT, '{email}', '{hashedPassword}', '{creationDate}', '', '{role}', 0)";
         _connection.RunUpsert(query);
     }
 

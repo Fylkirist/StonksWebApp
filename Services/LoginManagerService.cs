@@ -90,10 +90,10 @@ public class LoginManagerService
 
     public (bool, UserSession?) CheckUserSessionToken(string token)
     {
-        bool sessionExists = _activeUserSessions.TryGetValue(token,out UserSession session);
+        bool sessionExists = _activeUserSessions.TryGetValue(token,out UserSession? session);
         if (sessionExists)
         {
-            if (session.ValidUntil > DateTime.UtcNow)
+            if (session?.ValidUntil > DateTime.UtcNow)
             {
                 session.ValidUntil = DateTime.UtcNow + new TimeSpan(0, 0, 30, 0);
                 return (sessionExists, session);

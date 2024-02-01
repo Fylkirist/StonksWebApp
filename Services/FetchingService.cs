@@ -5,10 +5,7 @@ using System.Text.RegularExpressions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using JsonSerializer = System.Text.Json.JsonSerializer;
-using Json.Net;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using Newtonsoft.Json.Linq;
 
 
 namespace StonksWebApp.Services;
@@ -29,7 +26,7 @@ public static class FetchingService
             return new FinnhubPriceResponse();
         }
 
-        if (_priceCache.TryGetValue(ticker,out CachedCurrentStockPrice cached))
+        if (_priceCache.TryGetValue(ticker,out CachedCurrentStockPrice? cached))
         {
             if (cached.Expires > DateTime.UtcNow)
             {
@@ -237,7 +234,7 @@ public static class FetchingService
     private static Dictionary<string, TickerInfoMap> DeserializeAndMapTickerInfo(string json)
     {
         var map = new Dictionary<string, TickerInfoMap>();
-        dynamic deserialized = JsonConvert.DeserializeObject(json);
+        dynamic? deserialized = JsonConvert.DeserializeObject(json);
 
         if (deserialized == null)
         {
@@ -330,6 +327,11 @@ public class CompanyFactsResponse
 
     [JsonPropertyName("filings")]
     public EdgarFilings Filings { get; set; }
+
+    public CompanyFactsResponse()
+    {
+
+    }
 }
 
 public class EdgarFilings
@@ -338,6 +340,11 @@ public class EdgarFilings
     public Filings Recent { get; set; }
     [JsonPropertyName("files")]
     public EdgarFiles[] Files { get; set; }
+
+    public EdgarFilings()
+    {
+            
+    }
 }
 
 public class EdgarFiles
@@ -350,6 +357,11 @@ public class EdgarFiles
     public string FilingFrom { get; set; }
     [JsonPropertyName("filingTo")]
     public string FilingTo { get; set; }
+
+    public EdgarFiles()
+    {
+            
+    }
 }
 
 public class EdgarCompanyAddressContainer
@@ -358,6 +370,11 @@ public class EdgarCompanyAddressContainer
     public EdgarCompanyAddress Mailing { get; set; }
     [JsonPropertyName("business")]
     public EdgarCompanyAddress Business { get; set; }
+
+    public EdgarCompanyAddressContainer()
+    {
+            
+    }
 }
 public class EdgarCompanyAddress
 {
@@ -373,6 +390,11 @@ public class EdgarCompanyAddress
     public string ZipCode { get; set; }
     [JsonPropertyName("stateOrCountyDescription")]
     public string StateOrCountyDescription { get; set; }
+
+    public EdgarCompanyAddress()
+    {
+            
+    }
 }
 
 public class FormerName
@@ -383,6 +405,11 @@ public class FormerName
     public string From { get; set; }
     [JsonPropertyName("to")]
     public string To { get; set; }
+
+    public FormerName()
+    {
+        
+    }
 }
 
 public class Filings
@@ -428,6 +455,11 @@ public class Filings
 
     [JsonPropertyName("primaryDocDescription")]
     public string[] PrimaryDocDescription { get; set; }
+
+    public Filings()
+    {
+            
+    }
 }
 
 public class TickerInfoMap
@@ -537,4 +569,9 @@ public class FinnhubCompanyInfo
 
     [JsonPropertyName("finnhubIndustry")]
     public string FinnhubIndustry { get; set; }
+
+    public FinnhubCompanyInfo()
+    {
+        
+    }
 }

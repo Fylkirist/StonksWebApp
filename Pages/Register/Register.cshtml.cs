@@ -30,7 +30,7 @@ namespace StonksWebApp.Pages.Register
 
             if (emailValid && passValid)
             {
-                DatabaseConnectionService.Instance.CreateNewUser(email, password);
+                DatabaseConnectionService.Instance.CreateNewUser(email, password, false);
             }
             return Partial("_registrationForm", (passValid, emailValid));
         }
