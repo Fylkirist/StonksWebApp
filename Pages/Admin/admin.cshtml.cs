@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Net.Http.Headers;
 using StonksWebApp.models;
 using StonksWebApp.Services;
 
@@ -98,5 +99,17 @@ public class AdminModel : PageModel
         }
         return Partial("_filingTablePartial", result);
 
+    }
+
+    public IActionResult OnPostRemoveStock(int cik)
+    {
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"]??"");
+        if (!Request.IsHtmx() || !valid || session?.Role != "admin")
+        {
+            return Redirect("/Admin");
+        }
+        DatabaseConnectionService.Instance.DeleteCompany(cik);
+
+        return Content(string.Empty);
     }
 }

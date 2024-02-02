@@ -27,6 +27,15 @@
                     </a>
                     <ul class="nav nav-pills flex-column mb-auto">
                         <hr>
+                        @if (tokenValid)
+                        {
+                            <li>
+                                <a href="/Dashboard" class="nav-link text-white hover-effect">
+                                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+                                    Dashboard
+                                </a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a href="/" class="nav-link text-white hover-effect" aria-current="page">
                                 <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
@@ -57,9 +66,7 @@
                                     <strong>@session?.Name</strong>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-                                    <li><a class="dropdown-item" href="#">New project...</a></li>
-                                    <li><a class="dropdown-item" href="#">Settings</a></li>
-                                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                                    <li><a class="dropdown-item" href="/Account">Profile</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="#">Sign out</a></li>
                                 </ul>

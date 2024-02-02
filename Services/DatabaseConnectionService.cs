@@ -1,7 +1,4 @@
-﻿using Npgsql;
-using System.Data.Sql;
-using System.Runtime.InteropServices;
-using StonksWebApp.connections;
+﻿using StonksWebApp.connections;
 using StonksWebApp.models;
 
 namespace StonksWebApp.Services;
@@ -23,13 +20,27 @@ public class DatabaseConnectionService
         var query = "SELECT * FROM Companies";
         if (!string.IsNullOrEmpty(search))
         {
-            query += " WHERE LOWER(CName) LIKE LOWER(@search) OR LOWER(Ticker) LIKE LOWER(@search)";
+            query += " WHERE LOWER(CName) LIKE LOWER(@search) OR LOWER(Ticker) LIKE LOWER(@search) OR LOWER(Sector) LIKE LOWER(@search)";
         }
 
         query += " LIMIT 25;";
         var result = _connection.RunQuery(query,new KeyValuePair<string, string>("@search",$"%{search}%"));
 
         return CompanyFinancialModel.ConvertQueryResults(result);
+    }
+
+    public void DeleteCompany(int cik)
+    {
+        var query = $@"START TRANSACTION;
+            DELETE FROM Filings 
+            WHERE CompanyId IN (SELECT Id FROM Companies WHERE CIK = {cik});
+            DELETE FROM Companies 
+            WHERE CIK = {cik};
+            COMMIT;
+            ";
+        int numRows = _connection.RunUpsert(query);
+        Console.WriteLine(query);
+        Console.WriteLine($"{numRows} rows deleted");
     }
 
     public int UpsertRows(string query)
@@ -92,6 +103,7 @@ public class DatabaseConnectionService
         try
         {
             CreateNewUser(config["Credentials:Admin:Email"], config["Credentials:Admin:Password"], true);
+            Console.WriteLine($"Admin user generated with username: {config["Credentials:Admin:Email"]}");
         }
         catch (Exception e)
         {

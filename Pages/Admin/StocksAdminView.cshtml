@@ -8,21 +8,28 @@
     }
     foreach (var company in Model)
     {
-        <div class="border rounded p-3 mb-3">
+        <div class="border rounded p-3 mb-3" id="@company.Ticker">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <div>
                     <span class="fw-bold">@company.Name</span> 
                     <span class="text-muted">(@company.Ticker)</span>
                 </div>
-                <div>
-                </div>
+                <form hx-target="#@company.Ticker"
+                        hx-swap="outerHTML"
+                        hx-post="@Url.Page("admin")?handler=RemoveStock&cik=@company.CIK"
+                        hx-trigger="submit">
+                    @Html.AntiForgeryToken()
+                    <button type="submit"
+                            class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </form>
             </div>
             <form hx-post="@Url.Page("admin")?handler=UpdateTickerPrice&tickerSymbol=@company.Ticker"
                   hx-trigger="load delay:@GetDelayFromIdx(company)"
                   hx-swap="outerHTML">
                 @Html.AntiForgeryToken()
                 <img class="htmx-indicator" src="../spinner.gif" height="30" />
-
             </form>
         </div>
     }
