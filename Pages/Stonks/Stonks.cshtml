@@ -1,0 +1,17 @@
+﻿@page "/Stonks"
+@model StonksWebApp.Pages.Stonks.StonksModel
+@{
+    ViewData["Title"] = "Stonks";
+}
+
+<div>
+    <form hx-post="/Stonks?handler=QueryStonks" hx-target="#StonksListContainer" hx-swap="innerHTML">
+        @Html.AntiForgeryToken()
+        <h2>Search stonks</h2>
+        <input name="ticker" type="text"/>
+    </form>
+    
+    <div id="StonksListContainer">
+
+    </div>
+</div>

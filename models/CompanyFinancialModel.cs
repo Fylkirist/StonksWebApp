@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using StonksWebApp.connections;
+﻿using StonksWebApp.connections;
 
 namespace StonksWebApp.models;
 
@@ -10,10 +9,10 @@ public class CompanyFinancialModel
     public int CIK { get; set; }
     public DateTime FiscalYearStart { get; set; }
 
-    public int Shares { get; set; }
+    public long Shares { get; set; }
     public string Sector { get; set; }
 
-    public CompanyFinancialModel(string name, string ticker, int cik, DateTime fiscalYearStart, int shares, string sector)
+    public CompanyFinancialModel(string name, string ticker, int cik, DateTime fiscalYearStart, long shares, string sector)
     {
         Name = name;
         Ticker = ticker;
@@ -45,7 +44,7 @@ public class CompanyFinancialModel
             string ticker = columnMapping.ContainsKey("ticker") ? row.Data[columnMapping["ticker"]] : "";
             int cik = columnMapping.ContainsKey("cik") ? row.Data[columnMapping["cik"]] : 0;
             string date = columnMapping.ContainsKey("fiscalyearend") ? row.Data[columnMapping["fiscalyearend"]].ToString() : DateTime.MinValue.ToString();
-            int shares = columnMapping.ContainsKey("shares") ? row.Data[columnMapping["shares"]] : 0;
+            long shares = columnMapping.ContainsKey("shares") ? row.Data[columnMapping["shares"]] : 0;
             string sector = columnMapping.ContainsKey("sector") ? row.Data[columnMapping["sector"]] : string.Empty;
 
             models[idx] = new CompanyFinancialModel(name, ticker, cik, DateTime.Parse(date), shares, sector);

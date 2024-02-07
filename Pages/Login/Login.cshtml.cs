@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -16,7 +17,8 @@ public class LoginModel : PageModel
 
     public IActionResult OnPost(string usernameInput, string passwordInput)
     {
-        var (token, valid) = LoginManagerService.Instance.HandleLogin(usernameInput, passwordInput);
+        var ip = Request.HttpContext.Connection.RemoteIpAddress;
+        var (token, valid) = LoginManagerService.Instance.HandleLogin(usernameInput, passwordInput, ip);
         if (valid)
         {
             Response.Cookies.Append("sessionToken", token, new CookieOptions

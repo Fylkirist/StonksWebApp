@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace StonksWebApp.Pages
+namespace StonksWebApp.Pages.Pharma
 {
-    public class StonksModel : PageModel
+    public class PharmaModel : PageModel
     {
         public void OnGet()
         {

@@ -1,3 +1,4 @@
+using System.Net;
 using Htmx;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,7 +21,8 @@ public class AdminModel : PageModel
 
     public IActionResult OnGet()
     {
-        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "");
+        var ip = Request.HttpContext.Connection.RemoteIpAddress;
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip);
         if (!valid || session?.Role != "admin")
         {
             return Redirect("/Login");
@@ -30,7 +32,8 @@ public class AdminModel : PageModel
     }
     public IActionResult OnGetCompanies(string searchInput)
     {
-        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "");
+        var ip = Request.HttpContext.Connection.RemoteIpAddress;
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip);
         if (!valid || session?.Role != "admin")
         {
             return Redirect("/Login");
@@ -62,7 +65,8 @@ public class AdminModel : PageModel
 
     public IActionResult OnPostUpdateTickerPrice(string tickerSymbol)
     {
-        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "");
+        var ip = Request.HttpContext.Connection.RemoteIpAddress;
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip);
         if (!valid || session?.Role != "admin")
         {
             return Redirect("/Login");
@@ -77,7 +81,8 @@ public class AdminModel : PageModel
 
     public IActionResult OnGetGetFilings(string searchInput, string formType, DateTime? fromDate, DateTime? toDate)
     {
-        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "");
+        var ip = Request.HttpContext.Connection.RemoteIpAddress;
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip);
         if (!valid || session?.Role != "admin")
         {
             return Redirect("/Login");
@@ -103,7 +108,8 @@ public class AdminModel : PageModel
 
     public IActionResult OnPostRemoveStock(int cik)
     {
-        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"]??"");
+        var ip = Request.HttpContext.Connection.RemoteIpAddress;
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip);
         if (!Request.IsHtmx() || !valid || session?.Role != "admin")
         {
             return Redirect("/Admin");

@@ -1,8 +1,10 @@
 ﻿@using StonksWebApp.Services
+@using System.Net
 @{
     string? token = Context.Request.Cookies["sessionToken"];
-    var (tokenValid, session) = LoginManagerService.Instance.CheckUserSessionToken(token??"");
-<!DOCTYPE html>
+    IPAddress ip = Context.Connection.RemoteIpAddress;
+    var (tokenValid, session) = LoginManagerService.Instance.CheckUserSessionToken(token??"", ip);
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -33,6 +35,12 @@
                                 <a href="/Dashboard" class="nav-link text-white hover-effect">
                                     <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
                                     Dashboard
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/Stonks" class="nav-link text-white hover-effect">
+                                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+                                    Stonks
                                 </a>
                             </li>
                         }

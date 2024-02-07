@@ -7,6 +7,9 @@ namespace StonksWebApp.Pages.Stonks
     {
         [BindProperty(SupportsGet = true)]
         public string Ticker { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public string Name { get; set; }
         public void OnGet()
         {
         }

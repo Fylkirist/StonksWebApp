@@ -24,16 +24,19 @@
         <th>Ticker</th>
         <th>Name</th>
         <th>Current Price</th>
+        <th>Intraday Change</th>
         <th>Market Cap</th>
     </tr>
     </thead>
     <tbody>
     @foreach (var stonk in Model)
     {
+        var colour = stonk.PriceChange > 0 ? "green" : "red";
         <tr>
             <td><a asp-page="/Stonks/StonkDetails" asp-route-ticker="@stonk.Ticker">@stonk.Ticker</a></td>
             <td>@stonk.Name</td>
             <td>@stonk.CurrentPrice</td>
+            <td style="color:@colour;">@stonk.PriceChange%</td>
             <td>@stonk.MarketCap</td>
         </tr>
     }

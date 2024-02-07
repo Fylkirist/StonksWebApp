@@ -63,7 +63,7 @@ public class LoginManagerService
         return sessionToken;
     }
 
-    public (string, bool) HandleLogin(string username, string password)
+    public (string, bool) HandleLogin(string username, string password, IPAddress ip)
     {
 
         var instance = DatabaseConnectionService.Instance;
@@ -84,16 +84,16 @@ public class LoginManagerService
         {
             sessionToken = GenerateSessionToken();
         }
-        _activeUserSessions.Add(sessionToken,new UserSession(username, new IPAddress(143242036), storedUser.Role));
+        _activeUserSessions.Add(sessionToken,new UserSession(username, ip, storedUser.Role));
         return (sessionToken, valid);
     }
 
-    public (bool, UserSession?) CheckUserSessionToken(string token)
+    public (bool, UserSession?) CheckUserSessionToken(string token, IPAddress ip)
     {
         bool sessionExists = _activeUserSessions.TryGetValue(token,out UserSession? session);
         if (sessionExists)
         {
-            if (session?.ValidUntil > DateTime.UtcNow)
+            if (session?.ValidUntil > DateTime.UtcNow && Equals(session.IpAddress, ip))
             {
                 session.ValidUntil = DateTime.UtcNow + new TimeSpan(0, 0, 30, 0);
                 return (sessionExists, session);
