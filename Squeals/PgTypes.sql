@@ -31,4 +31,13 @@ CREATE TABLE Filings(
     FOREIGN KEY (CompanyId) REFERENCES Companies(Id)  
 );
 
-
+CREATE TABLE Prices(
+    Id SERIAL PRIMARY KEY,
+    CompanyId INTEGER NOT NULL,
+    PDate DATETIME NOT NULL,
+    Open REAL NOT NULL,
+    Close REAL NOT NULL,
+    High REAL NOT NULL,
+    Low REAL NOT NULL
+    FOREIGN KEY(CompanyId) REFERENCES Companies(Id)
+);

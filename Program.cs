@@ -1,6 +1,5 @@
 using StonksWebApp.connections;
 using StonksWebApp.Services;
-using Microsoft.Extensions.Configuration;
 
 namespace StonksWebApp
 {
@@ -28,12 +27,13 @@ namespace StonksWebApp
                 );
             FetchingService.FinnhubKey = app.Configuration["Credentials:Finnhub"];
             // These functions recreate tables, only use on migrations.
-            
+
             /*
             db.DropAllTables();
             db.CreateCompanyTable(); 
             db.CreateFilingsTable();
             db.CreateUsersTable();
+            db.CreateHistoricalPriceTable();
             db.CreateAdminUser(app.Configuration);
             */
 

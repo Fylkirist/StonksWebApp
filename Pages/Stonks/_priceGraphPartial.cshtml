@@ -1,0 +1,56 @@
+﻿@model StonksWebApp.Pages.Stonks._priceGraphPartialModel
+@{
+    double low = 99999999;
+    double high = 0;
+    for (int i = 0; i < Model.Prices.Length; i++)
+    {
+        double currentHigh = Model.Prices[i].High;
+        double currentLow = Model.Prices[i].Low;
+
+        if (currentLow < low)
+        {
+            low = currentLow;
+        }
+        if (currentHigh > high)
+        {
+            high = currentHigh;
+        }
+    }
+}
+
+<div>
+    <ul>
+        @foreach (var interval in @Model.Intervals)
+        {
+            <li hx-post="/Stonks/@Model.Ticker?handler=StockGraph&interval=@interval&range=@Model.CurrentRange"
+                hx-target="#StonkGraphContainer"
+                hx-swap="innerHTML">
+                @interval
+            </li>
+        }
+    </ul>
+</div>
+<div>
+    <div id = "CandlesContainer">
+        @foreach (var candle in @Model.Prices)
+        {
+            var colour = candle.Close > candle.Open ? "green" : Math.Abs(candle.Close - candle.Open) < 0.0001f? "grey":"red";
+            <div style="width: 10px; height: 100%;">
+                <div style="background: @colour; border: 1px black;"></div>
+                <div ></div>
+            </div>
+        }
+    </div>
+</div>
+<div>
+    <ul>
+        @foreach (var range in @Model.Ranges)
+        {
+            <li hx-post="/Stonks/@Model.Ticker?handler=StockGraph&interval=@Model.CurrentInterval&range=@range"
+                hx-target="#StonkGraphContainer"
+                hx-swap="innerHTML">
+                @range
+            </li>
+        }
+    </ul>
+</div>

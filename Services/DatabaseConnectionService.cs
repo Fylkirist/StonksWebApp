@@ -1,4 +1,5 @@
-﻿using StonksWebApp.connections;
+﻿using Microsoft.Extensions.Configuration.EnvironmentVariables;
+using StonksWebApp.connections;
 using StonksWebApp.models;
 
 namespace StonksWebApp.Services;
@@ -111,6 +112,23 @@ public class DatabaseConnectionService
         }
     }
 
+    public void CreateHistoricalPriceTable()
+    {
+        string query = @"CREATE TABLE Prices(
+            Id SERIAL PRIMARY KEY,
+            CompanyId INTEGER NOT NULL,
+            PDate DATE NOT NULL,
+            Open REAL NOT NULL,
+            Close REAL NOT NULL,
+            High REAL NOT NULL,
+            Low REAL NOT NULL,
+            Volume INTEGER NOT NULL,
+            FOREIGN KEY(CompanyId) REFERENCES Companies(Id)
+        );";
+        _connection.CreateTable(query);
+        Console.WriteLine("Prices table initialized");
+    }
+
     public void DropAllTables()
     {
         string query = $@"DO $$ DECLARE
@@ -140,6 +158,52 @@ public class DatabaseConnectionService
         string query = @$"INSERT INTO Users (Id, Email, Pass, DateCreated, Watchlist, UserRole, Validated) 
                         VALUES (DEFAULT, '{email}', '{hashedPassword}', '{creationDate}', '', '{role}', 0)";
         _connection.RunUpsert(query);
+    }
+
+    public PriceCandleModel[] GetHistoricalPrices(string ticker, DateTime from, DateTime to)
+    {
+        var query = $@"SELECT Prices.*
+            FROM Prices
+            INNER JOIN Companies ON Prices.company_id = Companies.id
+            WHERE Companies.ticker = @ticker
+              AND Prices.date BETWEEN {from} AND {to};
+            ";
+
+        var result = _connection.RunQuery(query, new KeyValuePair<string, string>("ticker",ticker));
+        var converted = PriceCandleModel.ConvertQueryResult(result).ToList();
+        var dateTimes = GenerateDatetimes(from, to, converted);
+
+        if (dateTimes.Count > 0)
+        { 
+            var newPrices = FetchingService.GetHistoricalPrices(ticker, from, to);
+            var uniquePrices = newPrices.Where(e => converted.All(c => c.Date != e.Date)).ToArray();
+            int cId = _connection.RunQuery($"SELECT Id FROM Companies WHERE Ticker = '{ticker}'").Rows[0].Data[0];
+            foreach (var price in uniquePrices)
+            {
+                _connection.RunUpsert($@"
+                    INSERT INTO Prices(Id, CompanyId, PDate, Open, Close, High, Low, Volume) 
+                    VALUES (DEFAULT, {cId}, {price.Date}, {price.Open}, {price.Close}, {price.High}, {price.Low}, {price.Volume});
+                ");
+            }
+            converted.AddRange(uniquePrices);
+        }
+
+        return converted.ToArray();
+    }
+     
+    private static List<DateTime> GenerateDatetimes(DateTime fromDate, DateTime toDate, List<PriceCandleModel> models)
+    {
+        List<DateTime> allDatetimes = new List<DateTime>();
+        DateTime currentDatetime = fromDate;
+        while (currentDatetime <= toDate)
+        {
+            if (models.All(e => e.Date != currentDatetime))
+            {
+                allDatetimes.Add(currentDatetime);
+            }
+            currentDatetime = currentDatetime.AddHours(1);
+        }
+        return allDatetimes;
     }
 
     public FilingModel[] GetFilings(string search, string type)

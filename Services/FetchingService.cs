@@ -6,6 +6,8 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using Newtonsoft.Json;
+using StonksWebApp.models;
+using Yahoo.Finance;
 
 
 namespace StonksWebApp.Services;
@@ -19,6 +21,24 @@ public static class FetchingService
     {
         return FinnhubKey;
     }
+
+    public static PriceCandleModel[] GetHistoricalPrices(string symbol, DateTime from, DateTime to)
+    {
+        var provider = new HistoricalDataProvider();
+        provider.DownloadHistoricalDataAsync(symbol, from, to).Wait();
+        if (provider.DownloadResult != HistoricalDataDownloadResult.Successful)
+        {
+            return Array.Empty<PriceCandleModel>();
+        }
+
+        var results = new List<PriceCandleModel>();
+        foreach (var record in provider.HistoricalData)
+        {
+            results.Add(new PriceCandleModel(record.Date, record.High, record.Low, record.Open, record.Close, record.Volume));
+        }
+        return results.ToArray();
+    }
+    
     public static FinnhubPriceResponse GetCurrentPrice(string ticker)
     {
         if (!TickerInfoMap.ContainsKey(ticker.ToUpper()))
