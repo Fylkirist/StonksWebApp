@@ -16,41 +16,52 @@
             high = currentHigh;
         }
     }
+    double priceRange = high - low;
 }
 
 <div>
-    <ul>
+    <ul class="nav nav-tabs">
         @foreach (var interval in @Model.Intervals)
         {
-            <li hx-post="/Stonks/@Model.Ticker?handler=StockGraph&interval=@interval&range=@Model.CurrentRange"
-                hx-target="#StonkGraphContainer"
-                hx-swap="innerHTML">
-                @interval
+            <li class="nav-item">
+                <form class="nav-link"
+                      hx-post="/Stonks/@Model.Ticker?handler=StockGraph&interval=@interval&range=@Model.CurrentRange"
+                      hx-target="#StonkGraphContainer"
+                      hx-swap="innerHTML"
+                      hx-trigger="click">
+                    @Html.AntiForgeryToken()
+                    @interval
+                </form>
             </li>
         }
     </ul>
+
+</div>
+<div id="CandlesContainer" style="width: 500px; height: 300px; border: 1px inset; display: flex; flex-direction: row; overflow-x: scroll">
+    @foreach (var candle in @Model.Prices)
+    {
+        double candleHeight = Math.Abs(candle.Close - candle.Open) / priceRange * 100;
+        var colour = candle.Close > candle.Open ? "green" : Math.Abs(candle.Close - candle.Open) < 0.0001f ? "grey" : "red";
+        <div style="width: 10px; height: 100%; margin-right: 5px;">
+            <div style="background: @colour; width: 100%; height: @candleHeight%;"></div>
+        </div>
+    }
 </div>
 <div>
-    <div id = "CandlesContainer">
-        @foreach (var candle in @Model.Prices)
-        {
-            var colour = candle.Close > candle.Open ? "green" : Math.Abs(candle.Close - candle.Open) < 0.0001f? "grey":"red";
-            <div style="width: 10px; height: 100%;">
-                <div style="background: @colour; border: 1px black;"></div>
-                <div ></div>
-            </div>
-        }
-    </div>
-</div>
-<div>
-    <ul>
+    <ul class="nav nav-tabs">
         @foreach (var range in @Model.Ranges)
         {
-            <li hx-post="/Stonks/@Model.Ticker?handler=StockGraph&interval=@Model.CurrentInterval&range=@range"
-                hx-target="#StonkGraphContainer"
-                hx-swap="innerHTML">
-                @range
+            <li class="nav-item">
+                <form class="nav-link"
+                      hx-post="/Stonks/@Model.Ticker?handler=StockGraph&interval=@Model.CurrentInterval&range=@range"
+                      hx-target="#StonkGraphContainer"
+                      hx-swap="innerHTML"
+                      hx-trigger="click">
+                    @Html.AntiForgeryToken()
+                    @range
+                </form>
             </li>
         }
     </ul>
+
 </div>

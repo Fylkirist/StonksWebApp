@@ -9,11 +9,13 @@
     </h1>
     <div>
         <div id="StonkGraphContainer">
-            
+            <form hx-post="/Stonks/@Model.Ticker?handler=StockGraph&interval=hour&range=week"
+                  hx-swap="outerHTML"
+                  hx-trigger="load">
+                @Html.AntiForgeryToken()
+                <img class="htmx-indicator" src="../spinner.gif" height="30"/>
+            </form>
         </div>
-        <script >
-            
-        </script>
     </div>
 </div>
 

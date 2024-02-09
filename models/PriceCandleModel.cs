@@ -22,6 +22,10 @@ public class PriceCandleModel
         Volume = volume;
     }
 
+    public PriceCandleModel()
+    {
+
+    }
     public static PriceCandleModel[] ConvertQueryResult(QueryResult result)
     {
         int num = result.Rows.Length;
