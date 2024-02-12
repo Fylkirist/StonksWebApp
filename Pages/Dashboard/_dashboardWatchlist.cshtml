@@ -1,0 +1,20 @@
+﻿@using StonksWebApp.Services
+@model StonksWebApp.Services.UserSession
+@{
+    var user = DatabaseConnectionService.Instance.GetUser(Model.Name);
+}
+
+<div>
+    <ul style="overflow-y: scroll">
+        @foreach (var ticker in user?.Watchlist ?? Array.Empty<string>())
+        {
+            var price = FetchingService.GetCurrentPrice(ticker);
+            var colour = price.PercentChange > 0 ? "red" : "green";
+            <li>
+                <a href="/Stonks/@ticker"> @ticker </a>
+                <label>  @price.CurrentPrice</label>
+                <label style="color: @colour">@price.PercentChange%</label>
+            </li>
+        }
+    </ul>
+</div>

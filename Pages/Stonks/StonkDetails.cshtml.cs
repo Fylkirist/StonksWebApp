@@ -33,9 +33,9 @@ public class StonkDetailsModel : PageModel
 
         string[] intervals = range switch
         {
-            "week" => new []{"hour", "day"},
-            "month" => new []{"hour", "day", "week"},
-            "year" => new []{"hour", "day", "week", "month"},
+            "week" => new []{"day"},
+            "month" => new []{"day", "week"},
+            "year" => new []{"day", "week", "month"},
             _ => throw new ArgumentOutOfRangeException(nameof(range), range, null)
         };
 
@@ -100,10 +100,10 @@ public class StonkDetailsModel : PageModel
         }
         else
         {
-            return prices;
+            return prices.OrderByDescending(e => e.Date).ToArray();
         }
 
-        return newPrices.ToArray();
+        return newPrices.OrderByDescending(e=>e.Date).ToArray();
     }
 
     private int GetWeekOfYear(DateTime date)

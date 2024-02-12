@@ -7,9 +7,11 @@
     <h1>
         @Model.Ticker
     </h1>
+    
+    <div hx-post="/Stonks/@Model.Ticker" hx-trigger="click" hx-swap="outerHTML"></div>
     <div>
         <div id="StonkGraphContainer">
-            <form hx-post="/Stonks/@Model.Ticker?handler=StockGraph&interval=hour&range=week"
+            <form hx-post="/Stonks/@Model.Ticker?handler=StockGraph&interval=day&range=week"
                   hx-swap="outerHTML"
                   hx-trigger="load">
                 @Html.AntiForgeryToken()

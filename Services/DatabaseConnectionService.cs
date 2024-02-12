@@ -129,6 +129,34 @@ public class DatabaseConnectionService
         Console.WriteLine("Prices table initialized");
     }
 
+    public void CreatePortfolioTables()
+    {
+        string query1 = @"CREATE TABLE Portfolios(
+            Id SERIAL PRIMARY KEY,
+            UserId INTEGER,
+            DateAdded DATE,
+            PortfolioName VARCHAR(255)
+            FOREIGN KEY (UserId) REFERENCES Users(Id)
+        );";
+
+        string query2 = @"CREATE TABLE PortfolioOrders(
+            Id SERIAL PRIMARY KEY,
+            PortfolioId INTEGER,
+            CompanyId INTEGER,
+            OrderType INTEGER,
+            OrderDate DATE,
+            OrderPrice REAL,
+            OrderSize INTEGER
+            FOREIGN KEY (CompanyId) REFERENCES Companies(Id)
+            FOREIGN KEY (PortfolioId) REFERENCES Portfolios(Id)
+        );";
+
+        _connection.CreateTable(query1);
+        Console.WriteLine("Portfolios table initialized");
+        _connection.CreateTable(query2);
+        Console.WriteLine("Orders table initialized");
+    }
+
     public void DropAllTables()
     {
         string query = $@"DO $$ DECLARE

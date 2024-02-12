@@ -27,13 +27,13 @@ namespace StonksWebApp
                 );
             FetchingService.FinnhubKey = app.Configuration["Credentials:Finnhub"];
             // These functions recreate tables, only use on migrations.
-
             /*
             db.DropAllTables();
             db.CreateCompanyTable(); 
             db.CreateFilingsTable();
             db.CreateUsersTable();
             db.CreateHistoricalPriceTable();
+            db.CreatePortfolioTables();
             db.CreateAdminUser(app.Configuration);
             */
 

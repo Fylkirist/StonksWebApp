@@ -25,6 +25,7 @@ public static class FetchingService
     public static PriceCandleModel[] GetHistoricalPrices(string symbol, DateTime from, DateTime to)
     {
         var provider = new HistoricalDataProvider();
+        
         provider.DownloadHistoricalDataAsync(symbol, from, to).Wait();
         if (provider.DownloadResult != HistoricalDataDownloadResult.Successful)
         {

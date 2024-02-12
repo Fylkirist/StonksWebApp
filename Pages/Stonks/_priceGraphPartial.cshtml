@@ -37,15 +37,23 @@
     </ul>
 
 </div>
-<div id="CandlesContainer" style="width: 500px; height: 300px; border: 1px inset; display: flex; flex-direction: row; overflow-x: scroll">
-    @foreach (var candle in @Model.Prices)
-    {
-        double candleHeight = Math.Abs(candle.Close - candle.Open) / priceRange * 100;
-        var colour = candle.Close > candle.Open ? "green" : Math.Abs(candle.Close - candle.Open) < 0.0001f ? "grey" : "red";
-        <div style="width: 10px; height: 100%; margin-right: 5px;">
-            <div style="background: @colour; width: 100%; height: @candleHeight%;"></div>
-        </div>
-    }
+<div>
+    <label>@high$</label>
+    <label>@low$</label>
+    <div id="CandlesContainer" style="width: 500px; height: 300px; border: 1px inset; display: flex; flex-direction: row; overflow-x: scroll; align-items: flex-start; overflow-y: hidden;">
+        @foreach (var candle in @Model.Prices)
+        {
+            double candleHeight = Math.Abs(candle.Close - candle.Open) / priceRange * 100;
+            double candleTopVal = candle.Open > candle.Close ? candle.Open : candle.Close;
+            double candleTopOffset = (candleTopVal - low) / (high - low) * 100 * 270/20;
+            var colour = candle.Close > candle.Open ? "green" : "red";
+            <div style="width: 20px; height: 100%; margin-right: 5px;">
+                <div style="background: @colour; width: 20px; height: @candleHeight%; margin-top: @candleTopOffset%;"></div>
+            </div>
+        }
+    </div>
+    <label>@Model.Prices[0].Date</label>
+    <label>@Model.Prices[^1].Date</label>
 </div>
 <div>
     <ul class="nav nav-tabs">

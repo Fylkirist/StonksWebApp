@@ -33,11 +33,31 @@ CREATE TABLE Filings(
 
 CREATE TABLE Prices(
     Id SERIAL PRIMARY KEY,
-    CompanyId INTEGER NOT NULL,
-    PDate DATETIME NOT NULL,
-    Open REAL NOT NULL,
-    Close REAL NOT NULL,
-    High REAL NOT NULL,
-    Low REAL NOT NULL
-    FOREIGN KEY(CompanyId) REFERENCES Companies(Id)
+    CompanyId INTEGER,
+    PDate DATETIME,
+    Open REAL,
+    Close REAL,
+    High REAL,
+    Low REAL
+    FOREIGN KEY (CompanyId) REFERENCES Companies(Id)
+);
+
+CREATE TABLE Portfolios(
+    Id SERIAL PRIMARY KEY,
+    UserId INTEGER,
+    DateAdded DATE,
+    PortfolioName VARCHAR(255)
+    FOREIGN KEY (UserId) REFERENCES Users(Id)
+);
+
+CREATE TABLE PortfolioOrders(
+    Id SERIAL PRIMARY KEY,
+    PortfolioId INTEGER,
+    CompanyId INTEGER,
+    OrderType INTEGER,
+    OrderDate DATE,
+    OrderPrice REAL,
+    OrderSize INTEGER
+    FOREIGN KEY (CompanyId) REFERENCES Companies(Id)
+    FOREIGN KEY (PortfolioId) REFERENCES Portfolios(Id)
 );
