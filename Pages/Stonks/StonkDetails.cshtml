@@ -1,14 +1,41 @@
 ﻿@page "/Stonks/{Ticker}"
+@using StonksWebApp.Services
+@using System.Net
 @model StonksWebApp.Pages.Stonks.StonkDetailsModel
 @{
     ViewData["Title"] = "Stonks - " + Model.Ticker;
+    var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "",  Request.HttpContext.Connection.RemoteIpAddress ?? IPAddress.None);
 }
 <div>
     <h1>
         @Model.Ticker
     </h1>
-    
-    <div hx-post="/Stonks/@Model.Ticker" hx-trigger="click" hx-swap="outerHTML"></div>
+    @if (valid)
+    {
+        var user = DatabaseConnectionService.Instance.GetUser(session.Name);
+        var containsStonk = user.Watchlist.Contains(Model.Ticker);
+        <div>
+            Watchlist 
+            @if (!containsStonk)
+            {
+                <form>
+                    <button hx-post="/Stonks/@Model.Ticker?handler=AddToWatchlist&add=true" hx-swap="outerHTML">
+                        @Html.AntiForgeryToken()
+                        Add
+                    </button>
+                </form>
+            }
+            else
+            {
+                <form>
+                    <button hx-post="/Stonks/@Model.Ticker?handler=AddToWatchlist&add=false" hx-swap="outerHTML">
+                        @Html.AntiForgeryToken()
+                        Remove
+                    </button>
+                </form>
+            }
+        </div>
+    }
     <div>
         <div id="StonkGraphContainer">
             <form hx-post="/Stonks/@Model.Ticker?handler=StockGraph&interval=day&range=week"

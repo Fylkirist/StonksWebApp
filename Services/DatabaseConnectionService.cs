@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration.EnvironmentVariables;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
 using StonksWebApp.connections;
 using StonksWebApp.models;
 
@@ -135,7 +136,8 @@ public class DatabaseConnectionService
             Id SERIAL PRIMARY KEY,
             UserId INTEGER,
             DateAdded DATE,
-            PortfolioName VARCHAR(255)
+            PortfolioName VARCHAR(255),
+            Capital REAL,
             FOREIGN KEY (UserId) REFERENCES Users(Id)
         );";
 
@@ -146,8 +148,8 @@ public class DatabaseConnectionService
             OrderType INTEGER,
             OrderDate DATE,
             OrderPrice REAL,
-            OrderSize INTEGER
-            FOREIGN KEY (CompanyId) REFERENCES Companies(Id)
+            OrderSize INTEGER,
+            FOREIGN KEY (CompanyId) REFERENCES Companies(Id),
             FOREIGN KEY (PortfolioId) REFERENCES Portfolios(Id)
         );";
 
@@ -176,6 +178,40 @@ public class DatabaseConnectionService
         var result = _connection.RunQuery(query,  new KeyValuePair<string, string>("Username", username));
         UserModel[] users = UserModel.TranslateQueryResult(result);
         return users.Length >= 1? users[0]: null;
+    }
+
+    public bool ToggleWatchlistItem(string username, string ticker, bool add)
+    {
+        var user = GetUser(username);
+        List<string> result = user.Watchlist.ToList();
+        result.Remove("");
+        bool added;
+        if (add)
+        {
+            if (!result.Contains(ticker))
+            {
+                result.Add(ticker);
+                UpsertRows(@$"
+                    UPDATE Users
+                    SET Watchlist = '{string.Join(',',result)}'
+                    WHERE LOWER(Email) = LOWER('{username}');
+                ");
+            }
+            
+            added = true;
+        }
+        else
+        {
+            result.Remove(ticker);
+            added = false;
+            UpsertRows($@"
+                UPDATE Users
+                SET Watchlist = '{string.Join(',', result)}'
+                WHERE LOWER(Email) = LOWER('{username}');
+            ");
+        }
+
+        return added;
     }
 
     public void CreateNewUser(string email, string password, bool admin)

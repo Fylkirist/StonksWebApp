@@ -13,7 +13,7 @@
                         Your Portfolios
                     </div>
                     <div class="card-body">
-                        <img hx-get="/Dashboard?handler=PortfolioList" class="htmx-indicator" src="../spinner.gif" height="30" />
+                        <img hx-get="/Dashboard?handler=PortfolioList" hx-trigger="load" hx-swap="outerHTML" class="htmx-indicator" src="../spinner.gif" height="30" />
                     </div>
                 </div>
             </div>
@@ -23,7 +23,7 @@
                         Watchlist
                     </div>
                     <div class="card-body">
-                        <img hx-get="/Dashboard?handler=WatchList" class="htmx-indicator" src="../spinner.gif" height="30" />
+                        <img hx-get="/Dashboard?handler=WatchList" hx-trigger="load" hx-swap="outerHTML" class="htmx-indicator" src="../spinner.gif" height="30" />
                     </div>
                 </div>
             </div>

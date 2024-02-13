@@ -1,0 +1,21 @@
+﻿@model (string ticker, bool contains);
+@{
+    if (!Model.contains)
+    {
+        <form>
+            <button hx-post="/Stonks/@Model.ticker?handler=AddToWatchlistadd=true" hx-swap="outerHTML">
+                @Html.AntiForgeryToken()
+                Add
+            </button>
+        </form>
+    }
+    else
+    {
+        <form>
+            <button hx-post="/Stonks/@Model.ticker?handler=AddToWatchlist&add=false" hx-swap="outerHTML">
+                @Html.AntiForgeryToken()
+                Remove
+            </button>
+        </form>
+    }
+}

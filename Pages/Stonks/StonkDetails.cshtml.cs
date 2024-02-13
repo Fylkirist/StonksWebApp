@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using Htmx;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -105,9 +106,22 @@ public class StonkDetailsModel : PageModel
 
         return newPrices.OrderByDescending(e=>e.Date).ToArray();
     }
-
     private int GetWeekOfYear(DateTime date)
     {
         return CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
     }
+
+    public IActionResult OnPostAddToWatchlist(bool add)
+    {
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", Request.HttpContext.Connection.RemoteIpAddress ?? IPAddress.None);
+        if (!Request.IsHtmx() || !valid)
+        {
+            return Redirect("/Login");
+        }
+
+        var added = DatabaseConnectionService.Instance.ToggleWatchlistItem(session.Name, Ticker, add);
+
+        return Partial("_watchlistToggleButton", (Ticker, added));
+    }
+
 }

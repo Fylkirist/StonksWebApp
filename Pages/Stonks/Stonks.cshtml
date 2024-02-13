@@ -5,10 +5,15 @@
 }
 
 <div>
-    <form hx-post="/Stonks?handler=QueryStonks" hx-target="#StonksListContainer" hx-swap="innerHTML">
+    <form>
         @Html.AntiForgeryToken()
         <h2>Search stonks</h2>
-        <input name="ticker" type="text"/>
+        <input hx-post="/Stonks?handler=QueryStonks" 
+               hx-target="#StonksListContainer" 
+               hx-swap="innerHTML" 
+               hx-trigger="keyup changed delay:500ms" 
+               name="ticker" 
+               type="text" />
     </form>
     
     <div id="StonksListContainer">

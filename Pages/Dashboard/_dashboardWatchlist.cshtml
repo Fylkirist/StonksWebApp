@@ -5,15 +5,17 @@
 }
 
 <div>
-    <ul style="overflow-y: scroll">
+    <ul class="list-group" style="max-height: 200px; overflow-y: auto;">
         @foreach (var ticker in user?.Watchlist ?? Array.Empty<string>())
         {
             var price = FetchingService.GetCurrentPrice(ticker);
-            var colour = price.PercentChange > 0 ? "red" : "green";
-            <li>
-                <a href="/Stonks/@ticker"> @ticker </a>
-                <label>  @price.CurrentPrice</label>
-                <label style="color: @colour">@price.PercentChange%</label>
+            var colour = price.PercentChange < 0 ? "text-danger" : "text-success";
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="/Stonks/@ticker" class="text-decoration-none"> @ticker </a>
+                <span>
+                    <span class="me-2">@price.CurrentPrice</span>
+                    <span class="@colour">@price.PercentChange%</span>
+                </span>
             </li>
         }
     </ul>
