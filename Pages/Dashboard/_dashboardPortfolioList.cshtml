@@ -1,8 +1,66 @@
-﻿@model StonksWebApp.Services.UserSession
+﻿@using StonksWebApp.Services
+@using StonksWebApp.models
+@model StonksWebApp.Services.UserSession
+
+@functions
+{
+    double CalculatePortfolioValue(PortfolioModel model)
+    {
+        var netPositions = new List<PositionModel>();
+        foreach (var trade in model.Trades)
+        {
+            if (netPositions.All(e => e.Ticker != trade.Ticker))
+            {
+                netPositions.Add(new PositionModel(trade.Ticker, trade.OrderType == "long", trade.OrderSize));
+            }
+            else
+            {
+                var pos = netPositions.First(e => e.Ticker == trade.Ticker);
+                var diff = trade.OrderType == "long" ? trade.OrderSize : -trade.OrderSize;
+                pos.Size += diff;
+                if (pos.Size < 0)
+                {
+                    pos.IsLong = !pos.IsLong;
+                    pos.Size = Math.Abs(pos.Size);
+                }
+            }
+        }
+        double value = 0;
+        foreach (var position in netPositions)
+        {
+            double price = FetchingService.GetCurrentPrice(position.Ticker).CurrentPrice;
+            double diff = position.IsLong ? price : -price;
+            value += diff;
+        }
+        return model.Capital + value;
+    }
+}
+
 @{
-    
+    var user = DatabaseConnectionService.Instance.GetUser(Model.Name);
+    var portfolios = DatabaseConnectionService.Instance.GetPortfolios(user?.Username ?? "");
 }
 
 <div>
-
+    <ul class="list-group">
+        @foreach (var portfolio in portfolios)
+        {
+            var currentValue = CalculatePortfolioValue(portfolio);
+            var initialValue = portfolio.StartCapital;
+            var difference = currentValue - initialValue;
+            var colour = difference > 0 ? "text-success" : "text-danger";
+            <li class="list-group-item">
+                <form>
+                    @Html.AntiForgeryToken()
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>@portfolio.Name</span>
+                        <span>
+                            <span class="me-2">Value: @currentValue</span>
+                            <span class="@colour">@difference</span>
+                        </span>
+                    </div>
+                </form>
+            </li>
+        }
+    </ul>
 </div>

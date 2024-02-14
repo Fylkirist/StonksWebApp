@@ -138,6 +138,7 @@ public class DatabaseConnectionService
             DateAdded DATE,
             PortfolioName VARCHAR(255),
             Capital REAL,
+            StartingCapital REAL,
             FOREIGN KEY (UserId) REFERENCES Users(Id)
         );";
 
@@ -178,6 +179,11 @@ public class DatabaseConnectionService
         var result = _connection.RunQuery(query,  new KeyValuePair<string, string>("Username", username));
         UserModel[] users = UserModel.TranslateQueryResult(result);
         return users.Length >= 1? users[0]: null;
+    }
+
+    public PortfolioModel[] GetPortfolios(string username)
+    {
+        return Array.Empty<PortfolioModel>();
     }
 
     public bool ToggleWatchlistItem(string username, string ticker, bool add)
