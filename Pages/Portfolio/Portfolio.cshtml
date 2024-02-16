@@ -1,5 +1,26 @@
 ﻿@page "/Portfolio"
+@using System.Net
+@using StonksWebApp.Services
 @model StonksWebApp.Pages.Portfolio.PortfolioModel
 @{
+    var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "" ,Request.HttpContext.Connection.RemoteIpAddress ?? IPAddress.None);
+    if (!valid)
+    {
+        await Html.RenderPartialAsync("Shared/_redirectToLogin", "/Login");
+    }
+    else
+    {
+        <div class="container mt-4">
+            <h1 class="mb-4">My Portfolios</h1>
+            <div class="mb-4">
+                @{
+                    await Html.RenderPartialAsync("_portfolioListPartial", session);
+                }
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPortfolioModal">
+                New Portfolio
+            </button>
+        </div>
 
+    }
 }
