@@ -15,25 +15,8 @@
         var user = DatabaseConnectionService.Instance.GetUser(session.Name);
         var containsStonk = user.Watchlist.Contains(Model.Ticker);
         <div>
-            Watchlist 
-            @if (!containsStonk)
-            {
-                <form>
-                    <button hx-post="/Stonks/@Model.Ticker?handler=AddToWatchlist&add=true" hx-swap="outerHTML">
-                        @Html.AntiForgeryToken()
-                        Add
-                    </button>
-                </form>
-            }
-            else
-            {
-                <form>
-                    <button hx-post="/Stonks/@Model.Ticker?handler=AddToWatchlist&add=false" hx-swap="outerHTML">
-                        @Html.AntiForgeryToken()
-                        Remove
-                    </button>
-                </form>
-            }
+            Watchlist
+            @await Html.PartialAsync("_watchlistToggleButton", (Model.Ticker, containsStonk))
         </div>
     }
     <div>
@@ -46,5 +29,35 @@
             </form>
         </div>
     </div>
+    <div>
+        <form hx-get="/Stonks/@Model.Ticker?handler=GetFilings" hx-swap="innerHTML" hx-target="#filingDatabaseViewer" hx-trigger="submit" class="mb-3">
+            @Html.AntiForgeryToken()
+            <div class="input-group">
+                <label class="input-group-text" for="searchInput">Search company filings</label>
+                <select name="formType" class="form-select">
+                    <optgroup label="SEC">
+                        <option value="10-K">10-K</option>
+                        <option value="10-Q">10-Q</option>
+                        <option value="S-1">S-1</option>
+                        <option value="S-3ASR">S-3</option>
+                        <option value="F-1">F-1</option>
+                        <option value="8-K">8-K</option>
+                        <option value="4">FORM 4</option>
+                    </optgroup>
+                    <optgroup label="FDA">
+                        <option>Test</option>
+                    </optgroup>
+                </select>
+                <label class="input-group-text" for="fromDate">From:</label>
+                <input name="fromDate" id="fromDate" type="date" class="form-control"/>
+                <label class="input-group-text" for="toDate">To:</label>
+                <input name="toDate" id="toDate" type="date" class="form-control"/>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+            <img class="htmx-indicator" src="../spinner.gif" height="30" />
+        </form>
+        <div id="filingDatabaseViewer">
+                
+        </div>
+    </div>
 </div>
-

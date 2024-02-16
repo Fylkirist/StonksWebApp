@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace StonksWebApp.Pages;
+namespace StonksWebApp.Pages.Admin;
 
 public class _selfUpdatingTickerPartialModel : PageModel
 {

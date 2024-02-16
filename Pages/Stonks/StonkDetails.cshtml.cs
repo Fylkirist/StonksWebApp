@@ -20,7 +20,7 @@ public class StonkDetailsModel : PageModel
     {
         if (!Request.IsHtmx())
         {
-            return Redirect("/Stonks");
+            return Partial("_redirectToLogin", "/Stonks");
         }
         var now = DateTime.Now;
         var then = range switch
@@ -116,12 +116,26 @@ public class StonkDetailsModel : PageModel
         var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", Request.HttpContext.Connection.RemoteIpAddress ?? IPAddress.None);
         if (!Request.IsHtmx() || !valid)
         {
-            return Redirect("/Login");
+            return Partial("/_redirectToLogin", "/Login");
         }
 
         var added = DatabaseConnectionService.Instance.ToggleWatchlistItem(session.Name, Ticker, add);
 
         return Partial("_watchlistToggleButton", (Ticker, added));
+    }
+
+    public IActionResult OnGetGetFilings(string formType, DateTime? fromDate, DateTime? toDate)
+    {
+        DateTime to = toDate ?? DateTime.UtcNow;
+        DateTime from = fromDate ?? DateTime.MinValue;
+        if (fromDate == null && toDate == null)
+        {
+            return Partial("_stonkFilingsListPartial", DatabaseConnectionService.Instance.GetFilings(Ticker, formType));
+        }
+        else
+        {
+            return Partial("_stonkFilingsListPartial", DatabaseConnectionService.Instance.GetFilings(Ticker, from, to, formType));
+        }
     }
 
 }

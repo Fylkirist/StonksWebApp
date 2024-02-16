@@ -17,6 +17,8 @@
         }
     }
     double priceRange = high - low;
+    int highLabel = (int)high;
+    int lowLabel = (int)low;
 }
 
 <div>
@@ -38,22 +40,30 @@
 
 </div>
 <div>
-    <label>@high$</label>
-    <label>@low$</label>
-    <div id="CandlesContainer" style="width: 500px; height: 300px; border: 1px inset; display: flex; flex-direction: row; overflow-x: scroll; align-items: flex-start; overflow-y: hidden;">
-        @foreach (var candle in @Model.Prices)
-        {
-            double candleHeight = Math.Abs(candle.Close - candle.Open) / priceRange * 100;
-            double candleTopVal = candle.Open > candle.Close ? candle.Open : candle.Close;
-            double candleTopOffset = (candleTopVal - low) / (high - low) * 100 * 270/20;
-            var colour = candle.Close > candle.Open ? "green" : "red";
-            <div style="width: 20px; height: 100%; margin-right: 5px;">
-                <div style="background: @colour; width: 20px; height: @candleHeight%; margin-top: @candleTopOffset%;"></div>
-            </div>
-        }
+    <div style="display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto 1fr auto;">
+        <div style="grid-column: 1; grid-row: 1 / span 2; display: flex; flex-direction: column; justify-content: space-between;">
+            <label style="align-self: flex-start;">@highLabel$</label>
+            <label style="align-self: flex-end;">@lowLabel$</label>
+        </div>
+
+        <div id="CandlesContainer" style="grid-column: 2; grid-row: 1 / span 3; width: 500px; height: 300px; border: 1px inset; overflow-x: scroll; display: flex; flex-direction: row; align-items: flex-start;">
+            @foreach (var candle in @Model.Prices)
+            {
+                double candleHeight = Math.Abs(candle.Close - candle.Open) / priceRange * 100;
+                double candleTopVal = candle.Open > candle.Close ? candle.Open : candle.Close;
+                double candleTopOffset = (candleTopVal - low) / (high - low) * 100 * 270/20;
+                var colour = candle.Close > candle.Open ? "green" : "red";
+                <div style="width: 20px; height: 100%; margin-right: 5px;">
+                    <div style="background: @colour; width: 20px; height: @candleHeight%; margin-top: @candleTopOffset%;"></div>
+                </div>
+            }
+        </div>
+        <br/>
+        <div style="grid-column: 2; grid-row: 3; display: flex; justify-content: space-between; max-width: 500px">
+            <label>@Model.Prices[0].Date.ToString("yyyy-MM-dd")</label>
+            <label>@Model.Prices[^1].Date.ToString("yyyy-MM-dd")</label>
+        </div>
     </div>
-    <label>@Model.Prices[0].Date</label>
-    <label>@Model.Prices[^1].Date</label>
 </div>
 <div>
     <ul class="nav nav-tabs">

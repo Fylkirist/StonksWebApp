@@ -19,7 +19,7 @@ namespace StonksWebApp.Pages.Stonks
                 LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip ?? IPAddress.None);
             if (!valid)
             {
-                return Redirect("/Index");
+                return Partial("_redirectToLogin", "/Index");
             }
 
             var companyModels = DatabaseConnectionService.Instance.GetCompanies(ticker);

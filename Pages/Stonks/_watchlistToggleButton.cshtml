@@ -2,8 +2,8 @@
 @{
     if (!Model.contains)
     {
-        <form>
-            <button hx-post="/Stonks/@Model.ticker?handler=AddToWatchlistadd=true" hx-swap="outerHTML">
+        <form id = "WatchlistToggleContainer">
+            <button hx-post="/Stonks/@Model.ticker?handler=AddToWatchlist&add=true" hx-swap="outerHTML" hx-target="#WatchlistToggleContainer">
                 @Html.AntiForgeryToken()
                 Add
             </button>
@@ -11,8 +11,8 @@
     }
     else
     {
-        <form>
-            <button hx-post="/Stonks/@Model.ticker?handler=AddToWatchlist&add=false" hx-swap="outerHTML">
+        <form id="WatchlistToggleContainer">
+            <button hx-post="/Stonks/@Model.ticker?handler=AddToWatchlist&add=false" hx-swap="outerHTML" hx-target="#WatchlistToggleContainer">
                 @Html.AntiForgeryToken()
                 Remove
             </button>

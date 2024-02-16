@@ -1,10 +1,6 @@
-using Htmx;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using StonksWebApp.models;
-using StonksWebApp.Services;
 
-namespace StonksWebApp.Pages;
+namespace StonksWebApp.Pages.Admin;
 
 public class StocksAdminViewModel : PageModel
 {

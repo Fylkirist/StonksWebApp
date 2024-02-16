@@ -1,14 +1,11 @@
-using System.Net;
 using Htmx;
 using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Net.Http.Headers;
 using StonksWebApp.models;
 using StonksWebApp.Services;
 
-namespace StonksWebApp.Pages;
+namespace StonksWebApp.Pages.Admin;
 
 public class AdminModel : PageModel
 {
@@ -25,7 +22,7 @@ public class AdminModel : PageModel
         var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip);
         if (!valid || session?.Role != "admin")
         {
-            return Redirect("/Login");
+            return Partial("_redirectToLogin", "/Login");
         }
 
         return Page();
@@ -36,11 +33,11 @@ public class AdminModel : PageModel
         var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip);
         if (!valid || session?.Role != "admin")
         {
-            return Redirect("/Login");
+            return Partial("_redirectToLogin", "/Login");
         }
         if (!Request.IsHtmx())
         {
-            return Page();
+            return Partial("_redirectToLogin", "/Admin");
         }
 
         var db = DatabaseConnectionService.Instance;
@@ -55,6 +52,16 @@ public class AdminModel : PageModel
 
     public void OnPostUpdateFromCsv(IFormFile csvFile)
     {
+        var ip = Request.HttpContext.Connection.RemoteIpAddress;
+        var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip);
+        if (!valid || session?.Role != "admin")
+        {
+            return;
+        }
+        if (!Request.IsHtmx())
+        {
+            return;
+        }
         if (csvFile != null && csvFile.Length > 0)
         {
             using var stream = new StreamReader(csvFile.OpenReadStream());
@@ -69,7 +76,7 @@ public class AdminModel : PageModel
         var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip);
         if (!valid || session?.Role != "admin")
         {
-            return Redirect("/Login");
+            return Partial("_redirectToLogin", "/Login");
         }
         if (Request.IsHtmx())
         {
@@ -85,12 +92,12 @@ public class AdminModel : PageModel
         var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip);
         if (!valid || session?.Role != "admin")
         {
-            return Redirect("/Login");
+            return Partial("_redirectToLogin", "/Login");
         }
 
         if (!Request.IsHtmx())
         {
-            return Page();
+            return Partial("_redirectToLogin", "/Admin");
         }
 
         FilingModel[] result;
@@ -112,7 +119,7 @@ public class AdminModel : PageModel
         var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", ip);
         if (!Request.IsHtmx() || !valid || session?.Role != "admin")
         {
-            return Redirect("/Admin");
+            return Partial("_redirectToLogin", "/Admin");
         }
         DatabaseConnectionService.Instance.DeleteCompany(cik);
 
