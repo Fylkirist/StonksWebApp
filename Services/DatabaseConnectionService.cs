@@ -186,6 +186,67 @@ public class DatabaseConnectionService
         return Array.Empty<PortfolioModel>();
     }
 
+    public bool PortfolioBelongsTo(int id, string username)
+    {
+        string query = @$"SELECT COUNT(*) AS CountMatches
+            FROM Portfolios AS p
+            INNER JOIN Users AS u ON p.UserId = u.Id
+            WHERE p.PortfolioId = {id}
+            AND u.Email = '{username}';
+            ";
+        
+        var res = _connection.RunUpsert(query);
+        return res != 0;
+    }
+
+    public void UpdatePortfolioName(int id, string newName)
+    {
+        string query = $@"UPDATE Portfolios
+            SET Name = @newName
+            WHERE PortfolioId = {id};
+            ";
+        var nameParam = new KeyValuePair<string, string>("newName", newName);
+
+        var res = _connection.RunUpsert(query, nameParam);
+        if (res == 0)
+        {
+            Console.WriteLine($"Portfolio name update failed on {id}, attempted new name: {newName}");
+        }
+    }
+
+    public void DeletePortfolio(int id)
+    {
+        string query = @$"BEGIN TRANSACTION;
+
+            DELETE FROM PortfolioOrders
+            WHERE PortfolioId = {id};
+
+            DELETE FROM Portfolios
+            WHERE Id = {id};
+
+            COMMIT;
+            ";
+
+        _connection.RunUpsert(query);
+    }
+
+    public void CreatePortfolio(string name, double startingCapital, int userId)
+    {
+        string query = $@"INSERT INTO Portfolios (UserId, DateAdded, PortfolioName, Capital, StartingCapital)
+            VALUES ({userId}, CURRENT_DATE, @PortfolioName, {startingCapital}, {startingCapital});
+            ";
+
+        var nameParam = new KeyValuePair<string, string>("PortfolioName", name);
+        _connection.RunUpsert(query, nameParam);
+    }
+
+    public void PushTradeOrder(string symbol, int shares, bool isLong, double price, int portfolioId)
+    {
+        string query = $@"INSERT INTO PortfolioOrders (PortfolioId, CompanyId, OrderType, OrderDate, OrderPrice, OrderSize)
+            VALUES (@PortfolioId, @CompanyId, @OrderType, @OrderDate, @OrderPrice, @OrderSize);
+            ";
+    }
+
     public bool ToggleWatchlistItem(string username, string ticker, bool add)
     {
         var user = GetUser(username);

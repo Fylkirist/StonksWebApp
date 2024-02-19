@@ -3,6 +3,7 @@
 public interface IDatabaseConnection
 {
     public int RunUpsert(string query);
+    public int RunUpsert(string query, params KeyValuePair<string, string>[] sqlParams);
     public QueryResult RunQuery(string query, params KeyValuePair<string,string>[] sqlParams);
     public void CreateTable(string tableSchema);
 }

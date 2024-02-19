@@ -30,6 +30,18 @@ public class PostgresqlConnection: IDatabaseConnection
         return command.ExecuteNonQuery();
     }
 
+    public int RunUpsert(string query, params KeyValuePair<string, string>[] sqlParams)
+    {
+        using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
+        connection.Open();
+        var command = new NpgsqlCommand(query, connection);
+        foreach (var pair in sqlParams)
+        {
+            command.Parameters.AddWithValue(pair.Key, pair.Value);
+        }
+        return command.ExecuteNonQuery();
+    }
+
     public QueryResult RunQuery(string query, params KeyValuePair<string,string>[] sqlParams)
     {
         using NpgsqlConnection connection = new NpgsqlConnection(_connectionString);
