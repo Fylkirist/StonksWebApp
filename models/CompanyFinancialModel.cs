@@ -4,6 +4,7 @@ namespace StonksWebApp.models;
 
 public class CompanyFinancialModel
 {
+    public int CompanyId { get; set; }
     public string Name { get; set; }
     public string Ticker { get; set; }
     public int CIK { get; set; }
@@ -12,7 +13,7 @@ public class CompanyFinancialModel
     public long Shares { get; set; }
     public string Sector { get; set; }
 
-    public CompanyFinancialModel(string name, string ticker, int cik, DateTime fiscalYearStart, long shares, string sector)
+    public CompanyFinancialModel(string name, string ticker, int cik, DateTime fiscalYearStart, long shares, string sector, int companyId)
     {
         Name = name;
         Ticker = ticker;
@@ -20,6 +21,7 @@ public class CompanyFinancialModel
         FiscalYearStart = fiscalYearStart;
         Shares = shares;
         Sector = sector;
+        CompanyId = companyId;
     }
 
     public CompanyFinancialModel()
@@ -40,6 +42,7 @@ public class CompanyFinancialModel
         int idx = 0;
         foreach (var row in result.Rows)
         {
+            int id = columnMapping.ContainsKey("id") ? row.Data[columnMapping["id"]] : -1;
             string name = columnMapping.ContainsKey("cname") ? row.Data[columnMapping["cname"]] : "";
             string ticker = columnMapping.ContainsKey("ticker") ? row.Data[columnMapping["ticker"]] : "";
             int cik = columnMapping.ContainsKey("cik") ? row.Data[columnMapping["cik"]] : 0;
@@ -47,7 +50,7 @@ public class CompanyFinancialModel
             long shares = columnMapping.ContainsKey("shares") ? row.Data[columnMapping["shares"]] : 0;
             string sector = columnMapping.ContainsKey("sector") ? row.Data[columnMapping["sector"]] : string.Empty;
 
-            models[idx] = new CompanyFinancialModel(name, ticker, cik, DateTime.Parse(date), shares, sector);
+            models[idx] = new CompanyFinancialModel(name, ticker, cik, DateTime.Parse(date), shares, sector, id);
             idx++;
         }
         return models;

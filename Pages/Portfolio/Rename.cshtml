@@ -6,6 +6,7 @@
 
 <form id="renameForm" hx-post="/Portfolio/Rename" hx-target="#portfolioList" hx-swap="outerHTML">
     <div class="mb-3">
+        @Html.AntiForgeryToken()
         <label for="newPortfolioName" class="form-label">New Portfolio Name</label>
         <input type="text" class="form-control" id="newPortfolioName" name="newPortfolioName" required>
         <input type="hidden" id="portfolioId" name="portfolioId" value="@Model.Portfolio.Id">

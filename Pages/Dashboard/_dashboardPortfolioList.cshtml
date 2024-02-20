@@ -11,12 +11,12 @@
         {
             if (netPositions.All(e => e.Ticker != trade.Ticker))
             {
-                netPositions.Add(new PositionModel(trade.Ticker, trade.OrderType == "long", trade.OrderSize));
+                netPositions.Add(new PositionModel(trade.Ticker, trade.OrderType == 1, trade.OrderSize));
             }
             else
             {
                 var pos = netPositions.First(e => e.Ticker == trade.Ticker);
-                var diff = trade.OrderType == "long" ? trade.OrderSize : -trade.OrderSize;
+                var diff = trade.OrderType == 1 ? trade.OrderSize : -trade.OrderSize;
                 pos.Size += diff;
                 if (pos.Size < 0)
                 {

@@ -47,7 +47,8 @@ CREATE TABLE Portfolios(
     UserId INTEGER,
     DateAdded DATE,
     PortfolioName VARCHAR(255),
-    Capital REAL
+    Capital REAL,
+    StartingCapital REAL,
     FOREIGN KEY (UserId) REFERENCES Users(Id)
 );
 

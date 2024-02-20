@@ -31,6 +31,7 @@ public class FilingModel
 
         foreach (var row in result.Rows)
         {
+            int id = row.Data[columnMapping["id"]];
             string cname = columnMapping.ContainsKey("cname") ? row.Data[columnMapping["cname"]] : "";
             string ticker = columnMapping.ContainsKey("ticker") ? row.Data[columnMapping["ticker"]] : "";
             DateTime fiscalYear = columnMapping.ContainsKey("fiscalyearend")
@@ -40,7 +41,7 @@ public class FilingModel
             int cik = columnMapping.ContainsKey("cik") ? row.Data[columnMapping["cik"]] : 0;
             string sector = columnMapping.ContainsKey("sector") ? row.Data[columnMapping["sector"]] : String.Empty;
 
-            CompanyFinancialModel cModel = new CompanyFinancialModel(cname,ticker,cik,fiscalYear,shares, sector);
+            CompanyFinancialModel cModel = new CompanyFinancialModel(cname,ticker,cik,fiscalYear,shares, sector, id);
             string url = columnMapping.ContainsKey("link") ? row.Data[columnMapping["link"]] : "";
             string type = columnMapping.ContainsKey("filingtype") ? row.Data[columnMapping["filingtype"]] : "";
             DateTime date = columnMapping.ContainsKey("filingdate") ? row.Data[columnMapping["filingdate"]] : DateTime.MinValue;

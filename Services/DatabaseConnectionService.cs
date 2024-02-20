@@ -214,6 +214,11 @@ public class DatabaseConnectionService
         }
     }
 
+    public models.PortfolioModel GetPortfolio(int id)
+    {
+        return null;
+    }
+
     public void DeletePortfolio(int id)
     {
         string query = @$"BEGIN TRANSACTION;
@@ -240,11 +245,17 @@ public class DatabaseConnectionService
         _connection.RunUpsert(query, nameParam);
     }
 
-    public void PushTradeOrder(string symbol, int shares, bool isLong, double price, int portfolioId)
+    public void PushTradeOrder(int companyId, int shares, bool isLong, double price, int portfolioId)
     {
+        int type = isLong ? 1 : 0;
+        
         string query = $@"INSERT INTO PortfolioOrders (PortfolioId, CompanyId, OrderType, OrderDate, OrderPrice, OrderSize)
-            VALUES (@PortfolioId, @CompanyId, @OrderType, @OrderDate, @OrderPrice, @OrderSize);
+            VALUES ({portfolioId}, {companyId}, {type}, {DateTime.UtcNow},{price}, {shares});
             ";
+
+        int rows = _connection.RunUpsert(query);
+
+        Console.WriteLine($"Upsert: {rows} rows affected");
     }
 
     public bool ToggleWatchlistItem(string username, string ticker, bool add)
