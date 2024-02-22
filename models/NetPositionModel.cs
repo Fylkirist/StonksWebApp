@@ -1,16 +1,18 @@
 ﻿namespace StonksWebApp.models;
 
-public class PositionModel
+public class NetPositionModel
 {
     public string Ticker { get; set; }
     public bool IsLong { get; set; }
     public int Size { get; set; }
+    public double AverageValue { get; set; }
 
-    public PositionModel(string ticker, bool isLong, int size)
+    public NetPositionModel(string ticker, bool isLong, int size, double averageValue)
     {
         Ticker = ticker;
         IsLong = isLong;
         Size = size;
+        AverageValue = averageValue;
     }
 }
 

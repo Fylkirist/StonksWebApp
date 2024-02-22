@@ -63,3 +63,14 @@ CREATE TABLE PortfolioOrders(
     FOREIGN KEY (CompanyId) REFERENCES Companies(Id)
     FOREIGN KEY (PortfolioId) REFERENCES Portfolios(Id)
 );
+
+CREATE TABLE Positions(
+    Id SERIAL PRIMARY KEY,
+    PortfolioId INTEGER,
+    CompanyId INTEGER,
+    IsLong INTEGER,
+    AveragePrice REAL,
+    PositionSize INTEGER,
+    FOREIGN KEY (PortfolioId) REFERENCES Portfolios(Id),
+    FOREIGN KEY (CompanyId) REFERENCES Companies(Id)
+);

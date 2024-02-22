@@ -154,10 +154,24 @@ public class DatabaseConnectionService
             FOREIGN KEY (PortfolioId) REFERENCES Portfolios(Id)
         );";
 
+        string query3 = @"CREATE TABLE Positions(
+            Id SERIAL PRIMARY KEY,
+            PortfolioId INTEGER,
+            CompanyId INTEGER,
+            IsLong INTEGER,
+            AveragePrice REAL,
+            PositionSize INTEGER,
+            FOREIGN KEY (PortfolioId) REFERENCES Portfolios(Id),
+            FOREIGN KEY (CompanyId) REFERENCES Companies(Id)
+        );";
         _connection.CreateTable(query1);
         Console.WriteLine("Portfolios table initialized");
+
         _connection.CreateTable(query2);
         Console.WriteLine("Orders table initialized");
+
+        _connection.CreateTable(query3);
+        Console.WriteLine("Positions table initialized");
     }
 
     public void DropAllTables()
@@ -183,7 +197,25 @@ public class DatabaseConnectionService
 
     public PortfolioModel[] GetPortfolios(string username)
     {
-        return Array.Empty<PortfolioModel>();
+        string query = @"SELECT Portfolios.*
+            FROM Portfolios
+            JOIN Users ON Portfolios.UserId = Users.Id
+            WHERE Users.EMail = @Username;
+            ";
+        var usernameParam = new KeyValuePair<string, string>("Username", username);
+        var portfolios = PortfolioModel.GetPortfolioModel(_connection.RunQuery(query, usernameParam));
+        foreach (var portfolioResult in portfolios)
+        {
+            string tradeQuery = $@"SELECT PortfolioOrders.*, Companies.Ticker
+                FROM PortfolioOrders
+                JOIN Companies ON PortfolioOrders.CompanyId = Companies.Id
+                WHERE PortfolioOrders.Id = {portfolioResult.Id};
+                ";
+            TradeModel[] tradeModels = TradeModel.GetTradeModels(_connection.RunQuery(tradeQuery));
+            portfolioResult.Trades = tradeModels;
+        }
+
+        return portfolios;
     }
 
     public bool PortfolioBelongsTo(int id, string username)
@@ -214,9 +246,22 @@ public class DatabaseConnectionService
         }
     }
 
+    
+
     public models.PortfolioModel GetPortfolio(int id)
     {
-        return null;
+        string query = $@"SELECT * FROM Portfolios WHERE Id = {id}";
+        PortfolioModel portfolioResult = PortfolioModel.GetPortfolioModel(_connection.RunQuery(query))[0];
+
+        string tradeQuery = $@"SELECT PortfolioOrders.*, Companies.Ticker
+            FROM PortfolioOrders
+            JOIN Companies ON PortfolioOrders.CompanyId = Companies.Id
+            WHERE PortfolioOrders.Id = {portfolioResult.Id};
+            ";
+        TradeModel[] tradeModels = TradeModel.GetTradeModels(_connection.RunQuery(tradeQuery));
+        portfolioResult.Trades = tradeModels;
+
+        return portfolioResult;
     }
 
     public void DeletePortfolio(int id)
@@ -224,6 +269,9 @@ public class DatabaseConnectionService
         string query = @$"BEGIN TRANSACTION;
 
             DELETE FROM PortfolioOrders
+            WHERE PortfolioId = {id};
+
+            DELETE FROM Positions
             WHERE PortfolioId = {id};
 
             DELETE FROM Portfolios

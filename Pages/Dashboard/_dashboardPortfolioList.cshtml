@@ -6,12 +6,12 @@
 {
     double CalculatePortfolioValue(PortfolioModel model)
     {
-        var netPositions = new List<PositionModel>();
+        var netPositions = new List<NetPositionModel>();
         foreach (var trade in model.Trades)
         {
             if (netPositions.All(e => e.Ticker != trade.Ticker))
             {
-                netPositions.Add(new PositionModel(trade.Ticker, trade.OrderType == 1, trade.OrderSize));
+                netPositions.Add(new NetPositionModel(trade.Ticker, trade.OrderType == 1, trade.OrderSize, trade.OrderPrice));
             }
             else
             {

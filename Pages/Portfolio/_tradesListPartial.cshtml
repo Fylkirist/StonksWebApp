@@ -1,0 +1,56 @@
+﻿@using StonksWebApp.models
+@using StonksWebApp.Services
+@model StonksWebApp.models.TradeModel[]
+
+@functions
+{
+    NetPositionModel[] GetNetPositions(TradeModel[] trades)
+    {
+
+        var netPositions = new List<NetPositionModel>();
+        foreach (var trade in trades)
+        {
+            if (netPositions.All(e => e.Ticker != trade.Ticker))
+            {
+                netPositions.Add(new NetPositionModel(trade.Ticker, trade.OrderType == 1, trade.OrderSize, trade.OrderPrice));
+            }
+            else
+            {
+                var pos = netPositions.First(e => e.Ticker == trade.Ticker);
+                var diff = trade.OrderType == 1 ? trade.OrderSize : -trade.OrderSize;
+                pos.Size += diff;
+                if (pos.Size < 0)
+                {
+                    pos.IsLong = !pos.IsLong;
+                    pos.Size = Math.Abs(pos.Size);
+                }
+            }
+        }
+        return netPositions.ToArray();
+    }
+}
+
+<div>
+    <ul>
+        @foreach (var trade in GetNetPositions(Model))
+        {
+            var currentPrice = FetchingService.GetCurrentPrice(trade.Ticker);
+            var positionType = trade.IsLong ? "Long" : "Short";
+            <label>
+                @trade.Ticker
+            </label>
+            <label>
+                @trade.Size
+            </label>
+            <label>
+                @currentPrice.CurrentPrice$
+            </label>
+            <label>
+                Net position: @positionType  @trade.Size Shares
+            </label>
+            <label>
+                
+            </label>
+        }
+    </ul>
+</div>

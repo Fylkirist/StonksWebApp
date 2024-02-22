@@ -3,8 +3,16 @@
 @model StonksWebApp.Pages.Portfolio.PortfolioDetailsModel
 @{
     var db = DatabaseConnectionService.Instance;
+    var portfolio = db.GetPortfolio(Model.PortfolioId);
 }
 
 <div>
-    <h1></h1>
+    <h1>@portfolio.Name</h1>
+    
+    
+    <div id = "TradesListContainer">
+        @{
+            await Html.RenderPartialAsync("_tradesListPartial", portfolio.Trades);
+        }
+    </div>
 </div>
