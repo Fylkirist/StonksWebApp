@@ -17,6 +17,7 @@ public static class FetchingService
     public static Dictionary<string, TickerInfoMap> TickerInfoMap = new();
     private static Dictionary<string, CachedCurrentStockPrice> _priceCache = new();
     public static string FinnhubKey = "";
+    private static OutgoingRateLimiter _limiter = new OutgoingRateLimiter();
     private static string GetFinnhubApiKey()
     {
         return FinnhubKey;
@@ -55,6 +56,8 @@ public static class FetchingService
             }
         }
 
+        _limiter.WaitForFinnhubLimiter();
+
         HttpClient client = new HttpClient();
         HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://finnhub.io/api/v1/quote?symbol={ticker}");
         request.Headers.Add("X-Finnhub-Token" , GetFinnhubApiKey());
@@ -88,6 +91,8 @@ public static class FetchingService
         }
         var cikPadded = cik.PadLeft(10, '0');
         var companyInfoUrl = $"https://data.sec.gov/submissions/CIK{cikPadded}.json";
+
+        _limiter.WaitForSECLimiter();
 
         HttpClient client = new HttpClient();
         HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, companyInfoUrl);
