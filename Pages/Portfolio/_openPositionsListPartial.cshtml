@@ -1,0 +1,32 @@
+﻿@using StonksWebApp.models
+@using StonksWebApp.Services
+@model int
+@{
+    PortfolioPositionModel?[] positions = DatabaseConnectionService.Instance.GetOpenPositions(Model);
+}
+
+<div class="container">
+     <h2>Open Positions</h2>
+     @foreach (var position in positions)
+     {
+         var currentPrice = FetchingService.GetCurrentPrice(position.Ticker);
+         var positionType = position.IsLong ? "Long" : "Short";
+         var positionChange = position.IsLong ? currentPrice.CurrentPrice - position.EntryPrice : position.EntryPrice - currentPrice.CurrentPrice;
+         var percentageChange = (positionChange / position.EntryPrice * 100).ToString("0.0");
+         var changeColorClass = positionChange > 0 ? "text-success" : "text-danger";
+         <div class="row border p-2 mb-3">
+             <div class="col">
+                 <label><strong>Ticker:</strong> @position.Ticker</label><br>
+                 <label><strong>Company Name:</strong> @position.CompanyName</label><br>
+                 <label><strong>Position Type:</strong> @positionType</label><br>
+                 <label><strong>Position Size:</strong> @position.PositionSize @@ @position.EntryPrice</label><br>
+                 <label><strong>Change:</strong> <span class="@changeColorClass">@positionChange @percentageChange%</span></label>
+                 </div>
+             <div class="col">
+                 <button class="btn btn-danger">Close Position</button>
+             </div>
+         </div>
+     }
+ </div>
+
+

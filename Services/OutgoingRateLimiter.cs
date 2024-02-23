@@ -6,12 +6,13 @@ public class OutgoingRateLimiter
     public static OutgoingRateLimiter Instance => _instance ??= new OutgoingRateLimiter();
     private int _finnhubRequests;
     private int _secRequests;
+    private Task _limiterTask;
 
     public OutgoingRateLimiter()
     {
         _finnhubRequests = 0;
         _secRequests = 0;
-        ResetLimiter();
+        _limiterTask = ResetLimiter();
     }
 
     private async Task ResetLimiter()
@@ -20,7 +21,7 @@ public class OutgoingRateLimiter
         {
             _finnhubRequests = 0;
             _secRequests = 0;
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
         }
     }
 
@@ -35,7 +36,7 @@ public class OutgoingRateLimiter
         return;
     }
 
-    public void WaitForSECLimiter()
+    public void WaitForSecLimiter()
     {
         while (_secRequests >= 10)
         {

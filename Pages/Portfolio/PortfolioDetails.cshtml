@@ -3,16 +3,38 @@
 @model StonksWebApp.Pages.Portfolio.PortfolioDetailsModel
 @{
     var db = DatabaseConnectionService.Instance;
-    var portfolio = db.GetPortfolio(Model.PortfolioId);
+    var portfolio = db.GetPortfolio(Model.Id);
 }
 
-<div>
-    <h1>@portfolio.Name</h1>
-    
-    
-    <div id = "TradesListContainer">
-        @{
-            await Html.RenderPartialAsync("_tradesListPartial", portfolio.Trades);
-        }
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h1>@portfolio.Name</h1>
+            <h3>Free Capital: @portfolio.Capital</h3>
+            <h3>Open Positions:</h3>
+            <div>
+                @{
+                    await Html.RenderPartialAsync("_openPositionsListPartial", Model.Id);
+                }
+            </div>
+            <h3>Trade history:</h3>
+            <div id="TradesListContainer">
+                @{
+                    await Html.RenderPartialAsync("_tradesListPartial", portfolio.Trades);
+                }
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h3>New Trade</h3>
+            <input 
+                type="text"
+                hx-trigger="keyup changed delay:500ms"
+                hx-target="#StonkSearchResultContainer"
+                hx-get="/Portfolio/@Model.Id?handler=StonksList"
+                name="searchParam"/>
+            <div id = "StonkSearchResultContainer">
+
+            </div>
+        </div>
     </div>
 </div>

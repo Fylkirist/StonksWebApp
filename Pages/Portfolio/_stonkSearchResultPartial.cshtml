@@ -1,0 +1,37 @@
+﻿@using StonksWebApp.Services
+@model StonksWebApp.Pages.Portfolio._stonkSearchResultPartialModel
+@{
+    var companies = Model.Companies;
+}
+
+<div class="container">
+    <h3>Company Search List</h3>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Ticker</th>
+            <th>Current Price</th>
+            <th>Quantity</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var company in companies)
+        {
+            <tr>
+                <td>@company.Name</td>
+                <td>@company.Ticker</td>
+                <td>@FetchingService.GetCurrentPrice(company.Ticker)</td>
+                <td>
+                    <input type="number" class="form-control" value="0" min="0" max="9999999">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-success">Buy</button>
+                    <button type="button" class="btn btn-danger">Sell</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

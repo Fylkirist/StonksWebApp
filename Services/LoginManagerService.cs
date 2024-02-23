@@ -84,7 +84,7 @@ public class LoginManagerService
         {
             sessionToken = GenerateSessionToken();
         }
-        _activeUserSessions.Add(sessionToken,new UserSession(username, ip, storedUser.Role));
+        _activeUserSessions.Add(sessionToken,new UserSession(username, ip, storedUser.Role, storedUser.Id));
         return (sessionToken, valid);
     }
 
@@ -107,15 +107,17 @@ public class LoginManagerService
 
 public class UserSession
 {
+    public int Id { get; set; }
     public string Name { get; set; }
     public DateTime ValidUntil { get; set; }
     public IPAddress IpAddress { get; set; }
     public string Role { get; set; }
-    public UserSession(string name, IPAddress ip, string role)
+    public UserSession(string name, IPAddress ip, string role, int id)
     {
         Name = name;
         IpAddress = ip;
         ValidUntil = DateTime.Now + new TimeSpan(0, 0, 30, 0);
         Role = role;
+        Id = id;
     }
 }

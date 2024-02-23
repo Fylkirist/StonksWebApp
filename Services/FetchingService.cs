@@ -92,7 +92,7 @@ public static class FetchingService
         var cikPadded = cik.PadLeft(10, '0');
         var companyInfoUrl = $"https://data.sec.gov/submissions/CIK{cikPadded}.json";
 
-        _limiter.WaitForSECLimiter();
+        _limiter.WaitForSecLimiter();
 
         HttpClient client = new HttpClient();
         HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, companyInfoUrl);

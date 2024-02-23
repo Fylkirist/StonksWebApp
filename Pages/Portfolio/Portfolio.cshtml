@@ -17,9 +17,12 @@
                     await Html.RenderPartialAsync("_portfolioListPartial", session);
                 }
             </div>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPortfolioModal">
+            <button type="button" class="btn btn-primary" hx-get="/Portfolio?handler=NewPortfolio" hx-target="#newPortfolioModal">
                 New Portfolio
             </button>
+        </div>
+        <div id="newPortfolioModal">
+            
         </div>
 
     }

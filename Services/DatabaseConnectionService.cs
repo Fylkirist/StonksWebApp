@@ -195,6 +195,18 @@ public class DatabaseConnectionService
         return users.Length >= 1? users[0]: null;
     }
 
+    public PortfolioPositionModel[] GetOpenPositions(int id)
+    {
+        string query = @$"SELECT p.*, c.Ticker
+            FROM Positions p
+            JOIN Companies c ON p.CompanyId = c.Id
+            WHERE p.PortfolioId = {id};
+            ";
+
+        var res = PortfolioPositionModel.ConvertQueryResult(_connection.RunQuery(query));
+        return res;
+    }
+
     public PortfolioModel[] GetPortfolios(string username)
     {
         string query = @"SELECT Portfolios.*
@@ -283,14 +295,17 @@ public class DatabaseConnectionService
         _connection.RunUpsert(query);
     }
 
-    public void CreatePortfolio(string name, double startingCapital, int userId)
+    public int CreatePortfolio(string name, double startingCapital, int userId)
     {
         string query = $@"INSERT INTO Portfolios (UserId, DateAdded, PortfolioName, Capital, StartingCapital)
-            VALUES ({userId}, CURRENT_DATE, @PortfolioName, {startingCapital}, {startingCapital});
+            VALUES ({userId}, CURRENT_DATE, @PortfolioName, {startingCapital}, {startingCapital})
+            RETURNING Id;
             ";
 
         var nameParam = new KeyValuePair<string, string>("PortfolioName", name);
-        _connection.RunUpsert(query, nameParam);
+        var result = _connection.RunQuery(query, nameParam);
+        int id = result.Rows[0].Data[0];
+        return id;
     }
 
     public void PushTradeOrder(int companyId, int shares, bool isLong, double price, int portfolioId)

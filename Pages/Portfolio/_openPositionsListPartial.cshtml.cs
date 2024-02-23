@@ -1,16 +1,12 @@
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using StonksWebApp.Services;
 
 namespace StonksWebApp.Pages.Portfolio
 {
-    public class NewPortfolioModel : PageModel
+    public class _openPositionsListPartialModel : PageModel
     {
+        public int PortfolioId { get; set; }
         public void OnGet()
         {
         }
-
-        
     }
 }
