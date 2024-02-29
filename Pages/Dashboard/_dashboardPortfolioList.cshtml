@@ -6,31 +6,13 @@
 {
     double CalculatePortfolioValue(PortfolioModel model)
     {
-        var netPositions = new List<NetPositionModel>();
-        foreach (var trade in model.Trades)
-        {
-            if (netPositions.All(e => e.Ticker != trade.Ticker))
-            {
-                netPositions.Add(new NetPositionModel(trade.Ticker, trade.OrderType == 1, trade.OrderSize, trade.OrderPrice));
-            }
-            else
-            {
-                var pos = netPositions.First(e => e.Ticker == trade.Ticker);
-                var diff = trade.OrderType == 1 ? trade.OrderSize : -trade.OrderSize;
-                pos.Size += diff;
-                if (pos.Size < 0)
-                {
-                    pos.IsLong = !pos.IsLong;
-                    pos.Size = Math.Abs(pos.Size);
-                }
-            }
-        }
+        var positions = DatabaseConnectionService.Instance.GetOpenPositions(model.Id);
         double value = 0;
-        foreach (var position in netPositions)
+        foreach (var pos in positions)
         {
-            double price = FetchingService.GetCurrentPrice(position.Ticker).CurrentPrice;
-            double diff = position.IsLong ? price : -price;
-            value += diff;
+            var currentPrice = FetchingService.GetCurrentPrice(pos.Ticker);
+            var change = pos.IsLong ? currentPrice.CurrentPrice - pos.EntryPrice : pos.EntryPrice - currentPrice.CurrentPrice;
+            value += pos.EntryPrice + change;
         }
         return model.Capital + value;
     }
@@ -50,16 +32,13 @@
             var difference = currentValue - initialValue;
             var colour = difference > 0 ? "text-success" : "text-danger";
             <li class="list-group-item">
-                <form>
-                    @Html.AntiForgeryToken()
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span>@portfolio.Name</span>
-                        <span>
-                            <span class="me-2">Value: @currentValue</span>
-                            <span class="@colour">@difference</span>
-                        </span>
-                    </div>
-                </form>
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="/Portfolio/@portfolio.Id">@portfolio.Name</a>
+                    <span>
+                        <span class="me-2">Value: @currentValue</span>
+                        <span class="@colour">@difference</span>
+                    </span>
+                </div>
             </li>
         }
     </ul>

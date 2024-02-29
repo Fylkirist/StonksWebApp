@@ -27,9 +27,9 @@ namespace StonksWebApp.Pages.Portfolio
             }
 
             var db = DatabaseConnectionService.Instance;
-            var id = db.CreatePortfolio(PortfolioName, (double)StartingCapital, session.Id);
+            var id = db.CreatePortfolio(PortfolioName, StartingCapital, session.Id);
 
-            return Redirect($"/Portfolio/{id}");
+            return RedirectToPage($"/Portfolio/{id}");
         }
     }
 }

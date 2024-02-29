@@ -20,7 +20,7 @@
         @foreach (var company in companies)
         {
             <tr>
-                <td>@company.Name</td>
+                <td><a href="/Stonks/@company.Name">@company.Name</a></td>
                 <td>@company.Ticker</td>
                 <td>@FetchingService.GetCurrentPrice(company.Ticker)</td>
                 <td>

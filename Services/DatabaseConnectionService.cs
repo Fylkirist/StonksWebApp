@@ -235,7 +235,7 @@ public class DatabaseConnectionService
         string query = @$"SELECT COUNT(*) AS CountMatches
             FROM Portfolios AS p
             INNER JOIN Users AS u ON p.UserId = u.Id
-            WHERE p.PortfolioId = {id}
+            WHERE p.Id = {id}
             AND u.Email = '{username}';
             ";
         
@@ -260,20 +260,23 @@ public class DatabaseConnectionService
 
     
 
-    public models.PortfolioModel GetPortfolio(int id)
+    public models.PortfolioModel? GetPortfolio(int id)
     {
         string query = $@"SELECT * FROM Portfolios WHERE Id = {id}";
-        PortfolioModel portfolioResult = PortfolioModel.GetPortfolioModel(_connection.RunQuery(query))[0];
 
-        string tradeQuery = $@"SELECT PortfolioOrders.*, Companies.Ticker
-            FROM PortfolioOrders
-            JOIN Companies ON PortfolioOrders.CompanyId = Companies.Id
-            WHERE PortfolioOrders.Id = {portfolioResult.Id};
-            ";
-        TradeModel[] tradeModels = TradeModel.GetTradeModels(_connection.RunQuery(tradeQuery));
-        portfolioResult.Trades = tradeModels;
-
-        return portfolioResult;
+        PortfolioModel[] portfolioResult = PortfolioModel.GetPortfolioModel(_connection.RunQuery(query));
+        PortfolioModel? portfolioModel = portfolioResult.Length > 0? portfolioResult[0]: null;
+        if (portfolioModel != null)
+        {
+            string tradeQuery = $@"SELECT PortfolioOrders.*, Companies.Ticker
+                FROM PortfolioOrders
+                JOIN Companies ON PortfolioOrders.CompanyId = Companies.Id
+                WHERE PortfolioOrders.Id = {portfolioModel.Id};
+                ";
+            TradeModel[] tradeModels = TradeModel.GetTradeModels(_connection.RunQuery(tradeQuery));
+            portfolioModel.Trades = tradeModels;
+        }
+        return portfolioModel;
     }
 
     public void DeletePortfolio(int id)

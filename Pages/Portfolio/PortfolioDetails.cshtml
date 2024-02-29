@@ -1,40 +1,57 @@
 ﻿@page "/Portfolio/{id}"
+@using System.Net
 @using StonksWebApp.Services
 @model StonksWebApp.Pages.Portfolio.PortfolioDetailsModel
 @{
     var db = DatabaseConnectionService.Instance;
+    var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", Request.HttpContext.Connection.RemoteIpAddress ?? IPAddress.None);
+    if (!valid)
+    {
+        RedirectToPage("/Login");
+    }
+    var belongsToUser = db.PortfolioBelongsTo(Model.Id, session.Name);
     var portfolio = db.GetPortfolio(Model.Id);
-}
-
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <h1>@portfolio.Name</h1>
-            <h3>Free Capital: @portfolio.Capital</h3>
-            <h3>Open Positions:</h3>
-            <div>
-                @{
-                    await Html.RenderPartialAsync("_openPositionsListPartial", Model.Id);
-                }
+    if (portfolio == null || !belongsToUser)
+    {
+        RedirectToPage("/Portfolio");
+    }
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h1>@portfolio.Name</h1>
+                <h3>Free Capital: @portfolio.Capital</h3>
+                <h3>Open Positions:</h3>
+                <div>
+                    @{
+                        await Html.RenderPartialAsync("_openPositionsListPartial", Model.Id);
+                    }
+                </div>
+                <h3>Trade history:</h3>
+                <div id="TradesListContainer">
+                    @{
+                        await Html.RenderPartialAsync("_tradesListPartial", portfolio.Trades);
+                    }
+                </div>
             </div>
-            <h3>Trade history:</h3>
-            <div id="TradesListContainer">
-                @{
-                    await Html.RenderPartialAsync("_tradesListPartial", portfolio.Trades);
-                }
-            </div>
-        </div>
-        <div class="col-md-6">
-            <h3>New Trade</h3>
-            <input 
-                type="text"
-                hx-trigger="keyup changed delay:500ms"
-                hx-target="#StonkSearchResultContainer"
-                hx-get="/Portfolio/@Model.Id?handler=StonksList"
-                name="searchParam"/>
-            <div id = "StonkSearchResultContainer">
+            <div class="col-md-6">
+                <h3>New Trade</h3>
+                
+                <form hx-post="/Portfolio/@Model.Id?handler=StonksList" hx-target="#StonkSearchResultContainer">
+                    <input
+                        type="text"
+                        hx-trigger="keyup changed delay:500ms"
+                        name="searchParam"
+                        placeholder="Search..."
+                        class="form-control"
+                    />
+                </form>
 
+
+                <div id="StonkSearchResultContainer">
+
+                </div>
             </div>
         </div>
     </div>
-</div>
+}
+

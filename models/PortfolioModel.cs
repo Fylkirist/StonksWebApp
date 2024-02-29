@@ -71,8 +71,7 @@ public class TradeModel
         OrderSize = orderSize;
     }
     public static TradeModel[] GetTradeModels(QueryResult result)
-    {
-        //todo finish this shit
+    { 
         Dictionary<string, int> columnMapping = new Dictionary<string, int>();
         for (int i = 0; i < result.Columns.Length; i++)
         {
@@ -83,8 +82,12 @@ public class TradeModel
         foreach (var row in result.Rows)
         {
             var rowData = row.Data;
+            int type = rowData[columnMapping["ordertype"]];
+            DateTime date = rowData[columnMapping["orderdate"]];
+            double price = rowData[columnMapping["orderprice"]];
+            int size = rowData[columnMapping["ordersize"]];
             string ticker = rowData[columnMapping["ticker"]];
-            models[idx] = new TradeModel();
+            models[idx] = new TradeModel(ticker, type, date, price, size);
             idx++;
         }
 
