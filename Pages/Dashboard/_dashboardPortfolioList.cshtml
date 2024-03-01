@@ -33,7 +33,7 @@
             var colour = difference > 0 ? "text-success" : "text-danger";
             <li class="list-group-item">
                 <div class="d-flex justify-content-between align-items-center">
-                    <a href="/Portfolio/@portfolio.Id">@portfolio.Name</a>
+                    <a href="/Portfolio/@portfolio.Id" class="fw-bold">@portfolio.Name</a>
                     <span>
                         <span class="me-2">Value: @currentValue</span>
                         <span class="@colour">@difference</span>

@@ -5,16 +5,19 @@
 @{
     var db = DatabaseConnectionService.Instance;
     var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(Request.Cookies["sessionToken"] ?? "", Request.HttpContext.Connection.RemoteIpAddress ?? IPAddress.None);
-    if (!valid)
+    @if (!valid)
     {
-        RedirectToPage("/Login");
+        <meta http-equiv="refresh" content="0; url=/Login" />
     }
     var belongsToUser = db.PortfolioBelongsTo(Model.Id, session.Name);
     var portfolio = db.GetPortfolio(Model.Id);
-    if (portfolio == null || !belongsToUser)
+    @if (portfolio == null || !belongsToUser)
     {
-        RedirectToPage("/Portfolio");
+        <meta http-equiv="refresh" content="0; url=/Portfolio" />
     }
+    else
+    {
+
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -28,22 +31,38 @@
                 </div>
                 <h3>Trade history:</h3>
                 <div id="TradesListContainer">
-                    @{
-                        await Html.RenderPartialAsync("_tradesListPartial", portfolio.Trades);
-                    }
+                    <div class="container">
+                        <h3>Order history:</h3>
+                        <ul class="list-group">
+                            @foreach (var trade in portfolio.Trades)
+                            {
+                                string tradeType = trade.OrderType == 1 ? "Buy" : "Sell";
+                                string colorClass = trade.OrderType == 1 ? "text-success" : "text-danger";
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>@trade.Ticker</span>
+                                    <span class="@colorClass">@tradeType</span>
+                                    <span>@trade.OrderSize Shares @@ @trade.OrderPrice$</span>
+                                    <span>@trade.OrderDate</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
                 </div>
             </div>
             <div class="col-md-6">
                 <h3>New Trade</h3>
                 
-                <form hx-post="/Portfolio/@Model.Id?handler=StonksList" hx-target="#StonkSearchResultContainer">
+                <form name="StonkSearchForm" hx-post="/Portfolio?handler=StonksList&id=@Model.Id" hx-target="#StonkSearchResultContainer">
+                    @Html.AntiForgeryToken()
                     <input
                         type="text"
                         hx-trigger="keyup changed delay:500ms"
+                        hx-target="#StonkSearchResultContainer"
+                        hx-swap="innerHTML"
                         name="searchParam"
                         placeholder="Search..."
-                        class="form-control"
-                    />
+                        class="form-control"/>
                 </form>
 
 
@@ -53,5 +72,6 @@
             </div>
         </div>
     </div>
+    }
 }
 

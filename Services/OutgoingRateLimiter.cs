@@ -27,7 +27,7 @@ public class OutgoingRateLimiter
 
     public void WaitForFinnhubLimiter()
     {
-        while (_finnhubRequests >= 29)
+        while (_finnhubRequests >= 60)
         {
             Thread.Sleep(300);
         }

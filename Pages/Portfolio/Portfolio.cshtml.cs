@@ -1,3 +1,4 @@
+using Htmx;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using StonksWebApp.Services;
@@ -30,6 +31,29 @@ namespace StonksWebApp.Pages.Portfolio
             var id = db.CreatePortfolio(PortfolioName, StartingCapital, session.Id);
 
             return RedirectToPage($"/Portfolio/{id}");
+        }
+        public IActionResult OnGetStonksList(string searchParam, int id)
+        {
+            var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(
+                Request.Cookies["sessionToken"] ?? "",
+                Request.HttpContext.Connection.RemoteIpAddress ?? IPAddress.None);
+            if (!Request.IsHtmx())
+            {
+                return BadRequest();
+            }
+
+            if (valid || !DatabaseConnectionService.Instance.PortfolioBelongsTo(id, session?.Name ?? ""))
+            {
+                return Partial("_redirectToLogin", "/Login");
+            }
+
+            var companies = DatabaseConnectionService.Instance.GetCompanies(searchParam);
+            var model = new _stonkSearchResultPartialModel
+            {
+                Companies = companies,
+                PortfolioId = id
+            };
+            return Partial("_stonkSearchResultPartial", model);
         }
     }
 }
