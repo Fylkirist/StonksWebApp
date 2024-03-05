@@ -19,18 +19,22 @@
         <tbody>
         @foreach (var company in companies)
         {
-            <tr>
-                <td><a href="/Stonks/@company.Name">@company.Name</a></td>
-                <td>@company.Ticker</td>
-                <td>@FetchingService.GetCurrentPrice(company.Ticker)</td>
-                <td>
-                    <input type="number" class="form-control" value="0" min="0" max="9999999">
-                </td>
-                <td>
-                    <button type="button" class="btn btn-success">Buy</button>
-                    <button type="button" class="btn btn-danger">Sell</button>
-                </td>
-            </tr>
+                <form method="post">
+                @Html.AntiForgeryToken()
+                @company.CompanyId
+                <tr>
+                    <td><a href="/Stonks/@company.Name">@company.Name</a></td>
+                    <td>@company.Ticker</td>
+                    <td>@FetchingService.GetCurrentPrice(company.Ticker).CurrentPrice</td>
+                    <td>
+                        <input type="number" class="form-control" value="0" min="0" max="9999999">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-success">Buy</button>
+                        <button type="button" class="btn btn-danger">Sell</button>
+                    </td>
+                </tr>
+            </form>
         }
         </tbody>
     </table>

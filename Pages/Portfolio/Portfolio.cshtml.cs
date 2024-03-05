@@ -32,7 +32,7 @@ namespace StonksWebApp.Pages.Portfolio
 
             return RedirectToPage($"/Portfolio/{id}");
         }
-        public IActionResult OnGetStonksList(string searchParam, int id)
+        public IActionResult OnPostStonksList(string searchParam, int id)
         {
             var (valid, session) = LoginManagerService.Instance.CheckUserSessionToken(
                 Request.Cookies["sessionToken"] ?? "",
@@ -42,7 +42,7 @@ namespace StonksWebApp.Pages.Portfolio
                 return BadRequest();
             }
 
-            if (valid || !DatabaseConnectionService.Instance.PortfolioBelongsTo(id, session?.Name ?? ""))
+            if (!valid || !DatabaseConnectionService.Instance.PortfolioBelongsTo(id, session?.Name ?? ""))
             {
                 return Partial("_redirectToLogin", "/Login");
             }
